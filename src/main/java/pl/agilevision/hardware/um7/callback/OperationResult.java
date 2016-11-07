@@ -1,7 +1,7 @@
 package pl.agilevision.hardware.um7.callback;
 
 /**
- * Created by volodymyr on 07.11.16.
+ * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
 public enum OperationResult {
   Success,

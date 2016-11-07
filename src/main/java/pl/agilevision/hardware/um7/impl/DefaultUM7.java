@@ -12,62 +12,27 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by volodymyr on 07.11.16.
+ * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
 public class DefaultUM7 implements UM7 {
 
-  final int GET_FW_REVISION       = 0xAA; //# (170)
-  final int FLASH_COMMIT          = 0xAB; //# (171)
-  final int RESET_TO_FACTORY      = 0xAC; //# (172)
-  final int ZERO_GYROS            = 0xAD; //# (173)
-  final int SET_HOME_POSITION     = 0xAE; //# (174)
-  final int SET_MAG_REFERENCE     = 0xB0; //# (176)
-  final int RESET_EKF             = 0xB3; //# (179)
 
-  final int DREG_HEALTH           = 0x55;
-  final int DREG_GYRO_RAW_XY      = 0x56;
-  final int DREG_GYRO_PROC_X      = 0x61;
-  final int DREG_ACCEL_PROC_X     = 0x65;
-  final int DREG_EULER_PHI_THETA  = 0x70;
-  final int DREG_GYRO_BIAS_X      = 0x89;
-
-  final int CREG_COM_SETTINGS     = 0x00;
-  final int CREG_GYRO_TRIM_X      = 0x0C;
-  final int CREG_MAG_CAL1_1       = 0x0F;
-  final int CREG_MAG_BIAS_X       = 0x18;
-
-  final int REG_HIDDEN            = 0xF000;
-  final int H_CREG_GYRO_ALIGN1_1  = REG_HIDDEN | 0x31;
-  final int H_CREG_ACCEL_ALIGN1_1 = REG_HIDDEN | 0x52;
-  final int H_CREG_MAG_ALIGN1_1   = REG_HIDDEN | 0x73;
-  final int H_CREG_MAG_REF        = REG_HIDDEN | 0x7C;
-
-  final int HEALTH_GPS   = 0x1;
-  final int HEALTH_MAG   = 0x2;
-  final int HEALTH_GYRO  = 0x4;
-  final int HEALTH_ACCEL = 0x8;
-  final int HEALTH_ACC_N = 0x10;
-  final int HEALTH_MG_N  = 0x20;
-  final int HEALTH_RES6  = 0x40;
-  final int HEALTH_RES7  = 0x80;
-  final int HEALTH_OVF   = 0x100;
-
-  private static final Map<Integer, Integer> baud_rates;
+  private static final Map<Integer, Integer> baudRates;
   static
   {
-    baud_rates = new HashMap<>();
-    baud_rates.put(9600, 0);
-    baud_rates.put(14400, 1);
-    baud_rates.put(19200, 2);
-    baud_rates.put(38400, 3);
-    baud_rates.put(57600, 4);
-    baud_rates.put(115200, 5);
-    baud_rates.put(128000, 6);
-    baud_rates.put(153600, 7);
-    baud_rates.put(230400, 8);
-    baud_rates.put(256000, 9);
-    baud_rates.put(460800, 10);
-    baud_rates.put(921600, 11);
+    baudRates = new HashMap<>();
+    baudRates.put(9600, 0);
+    baudRates.put(14400, 1);
+    baudRates.put(19200, 2);
+    baudRates.put(38400, 3);
+    baudRates.put(57600, 4);
+    baudRates.put(115200, 5);
+    baudRates.put(128000, 6);
+    baudRates.put(153600, 7);
+    baudRates.put(230400, 8);
+    baudRates.put(256000, 9);
+    baudRates.put(460800, 10);
+    baudRates.put(921600, 11);
   }
 
   private Map<String, Integer> state;
