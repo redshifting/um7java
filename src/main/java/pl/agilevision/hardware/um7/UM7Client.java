@@ -11,6 +11,14 @@ import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
  */
 public interface UM7Client {
 
+  void connect() throws DeviceConnectionException;
+
+  void disconnect() throws DeviceConnectionException;
+
+  byte readByte();
+
+  UM7Packet readPacket() throws DeviceConnectionException;
+
   /**
    * Reads the device registry
    * @param start start offset
@@ -19,10 +27,18 @@ public interface UM7Client {
    * @return registry value
    * @throws OperationTimeoutException if the operation didn't finish in the given timeout
    */
-  UM7Packet readRegistry(final long start, final long length, final float timeout)
+  UM7Packet readRegistry(final byte start, final byte length, final float timeout)
       throws OperationTimeoutException, DeviceConnectionException;
-  UM7Packet writeRegistry(final long start, final long length, final byte[] data, final boolean noRead)
+  UM7Packet writeRegistry(final byte start, final byte length, final byte[] data,
+                          final float timeout, final boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException;
 
 
+  boolean setBaudRate(int baudRate) throws DeviceConnectionException, OperationTimeoutException;
+
+  UM7Packet readRegistry(byte start)
+      throws OperationTimeoutException, DeviceConnectionException;
+
+  UM7Packet writeRegistry(byte start)
+      throws OperationTimeoutException, DeviceConnectionException;
 }

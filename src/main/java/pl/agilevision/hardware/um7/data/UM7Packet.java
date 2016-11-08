@@ -11,14 +11,14 @@ public class UM7Packet {
     public byte startaddress;
     public byte[] data;
     public boolean commandfailed;
-    public boolean timeou;
+    public boolean timeout;
 
-    public UM7Packet(boolean foundpacket, boolean hasdata, byte startaddress, byte[] data, boolean commandfailed, boolean timeou) {
+    public UM7Packet(boolean foundpacket, boolean hasdata, byte startaddress, byte[] data, boolean commandfailed, boolean timeout) {
         this.foundpacket = foundpacket;
         this.hasdata = hasdata;
         this.startaddress = startaddress;
         this.data = data;
         this.commandfailed = commandfailed;
-        this.timeou = timeou;
+        this.timeout = timeout;
     }
 }

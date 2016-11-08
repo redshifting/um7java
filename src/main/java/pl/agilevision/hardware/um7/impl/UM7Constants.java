@@ -57,5 +57,8 @@ public interface UM7Constants {
     int HEALTH_OVF   = 0x100;
   }
 
-
+  interface Defaults {
+    int BAUD_RATE = 115200;
+    float OPERATION_TIMEOUT = 0.1f;
+  }
 }

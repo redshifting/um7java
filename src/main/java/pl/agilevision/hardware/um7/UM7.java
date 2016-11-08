@@ -64,12 +64,4 @@ public interface UM7 {
    * @throws OperationTimeoutException if the timeout passed before the operation finished
    */
   String getFirmwareVersion()  throws DeviceConnectionException, OperationTimeoutException;
-
-  /**
-   * Set Device baud rate
-   * @param baudRate
-   * @throws DeviceConnectionException in a case of the failure while communicating with the device
-   * @throws OperationTimeoutException if the timeout passed before the operation finished
-   */
-  boolean setBaudRate(int baudRate)  throws DeviceConnectionException, OperationTimeoutException;
 }
