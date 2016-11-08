@@ -23,41 +23,41 @@ public class DefaultUM7 implements UM7 {
   }
 
   public boolean zeroGyros() throws DeviceConnectionException, OperationTimeoutException {
-      UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.ZERO_GYROS);
-      return (! p.commandfailed);
+    UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.ZERO_GYROS);
+    return (! p.commandfailed);
   }
 
   public boolean resetEkf() throws DeviceConnectionException, OperationTimeoutException {
-      UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.RESET_EKF);
-      return (! p.commandfailed);
+    UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.RESET_EKF);
+    return (! p.commandfailed);
   }
 
   public boolean resetToFactory() throws DeviceConnectionException, OperationTimeoutException {
-      UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.RESET_TO_FACTORY);
-      return (! p.commandfailed);
+    UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.RESET_TO_FACTORY);
+    return (! p.commandfailed);
   }
 
   public boolean setMagReference() throws DeviceConnectionException, OperationTimeoutException {
-      UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.SET_MAG_REFERENCE);
-      return (! p.commandfailed);
+    UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.SET_MAG_REFERENCE);
+    return (! p.commandfailed);
   }
 
   public boolean setHomePosition() throws DeviceConnectionException, OperationTimeoutException {
-      UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.SET_HOME_POSITION);
-      return (! p.commandfailed);
+    UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.SET_HOME_POSITION);
+    return (! p.commandfailed);
   }
 
   public boolean flashCommit() throws DeviceConnectionException, OperationTimeoutException {
-      UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.FLASH_COMMIT);
-      return (! p.commandfailed);
+    UM7Packet p = this.um7Client.writeRegistry(UM7Constants.Commands.FLASH_COMMIT);
+    return (! p.commandfailed);
   }
 
   public String getFirmwareVersion() throws DeviceConnectionException, OperationTimeoutException {
-      UM7Packet p = this.um7Client.readRegistry(UM7Constants.Commands.GET_FW_REVISION);
-      if (p.commandfailed) {
-          return "";
-      }
+    UM7Packet p = this.um7Client.readRegistry(UM7Constants.Commands.GET_FW_REVISION);
+    if (p.commandfailed) {
+      return "";
+    }
 
-      return p.data.toString();
+    return p.data.toString();
   }
 }
