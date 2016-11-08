@@ -8,12 +8,12 @@ package pl.agilevision.hardware.um7.data;
 public class UM7Packet {
     public boolean foundpacket;
     public boolean hasdata;
-    public int startaddress;
-    public Object data;
+    public byte startaddress;
+    public byte[] data;
     public boolean commandfailed;
     public boolean timeou;
 
-    public UM7Packet(boolean foundpacket, boolean hasdata, int startaddress, Object data, boolean commandfailed, boolean timeou) {
+    public UM7Packet(boolean foundpacket, boolean hasdata, byte startaddress, byte[] data, boolean commandfailed, boolean timeou) {
         this.foundpacket = foundpacket;
         this.hasdata = hasdata;
         this.startaddress = startaddress;

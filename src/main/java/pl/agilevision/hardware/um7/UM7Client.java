@@ -23,4 +23,6 @@ public interface UM7Client {
       throws OperationTimeoutException, DeviceConnectionException;
   UM7Packet writeRegistry(final long start, final long length, final byte[] data, final boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException;
+
+
 }
