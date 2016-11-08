@@ -8,6 +8,9 @@ import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +30,7 @@ public class DefaultUM7Client implements UM7Client {
   private int baudRate;
   private boolean connected;
   private long t0;
-  private Map<String, Integer> state;
+  private Map<String, Object> state;
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final Map<Integer, Integer> baudRates;
@@ -134,26 +137,6 @@ public class DefaultUM7Client implements UM7Client {
     return bytes[0];
   }
 
-  /**
-   * Function that catches and parses incoming data, and then updates the sensor's state to include new data. Old
-   data in state is overwritten.
-
-   :return: Newly obtained data, and updates internal sensor state
-   */
-  public UM7Packet catchSample() throws DeviceConnectionException {
-    UM7Packet packet = this.readPacket();
-    if (!packet.foundpacket) {
-      return null;
-    }
-    //todo
-//        sample = parsedatabatch(packet.data, packet.startaddress)
-//        if (sample) {
-//
-//                self.state.update(sample)
-//                return sample
-//        }
-    return null;
-  }
 
   @Override
   public UM7Packet readPacket() throws DeviceConnectionException {
@@ -363,6 +346,134 @@ public class DefaultUM7Client implements UM7Client {
     return this.readRegistry(start, (byte) 0);
   }
 
+  @Override
+  public UM7Packet writeRegistry(final byte start)
+      throws OperationTimeoutException, DeviceConnectionException {
+    return writeRegistry(start, (byte)1, null, UM7Constants.Defaults.OPERATION_TIMEOUT, false);
+  }
+
+  public Map<String, Object> catchSample() throws DeviceConnectionException, IOException {
+    UM7Packet packet = this.readPacket();
+    if (!packet.foundpacket) {
+      return null;
+    }
+    Map<String, Object> sample = this.parseDataBatch(packet.data, packet.startaddress);
+    if (sample != null) {
+      this.state.putAll(sample);
+    }
+    return sample;
+  }
+
+  private Map parseDataBatch(byte[] data, byte startAddress) throws IOException {
+    String health = "health";
+    String gpx = "gyro_proc_x";
+    String gpy = "gyro_proc_y";
+    String gpz = "gyro_proc_z";
+    String gpt = "gyro_proc_time";
+    String grx = "gyro_raw_x";
+    String gry = "gyro_raw_y";
+    String grz = "gyro_raw_z";
+    String grt = "gyro_raw_time";
+    String apx = "accel_proc_x";
+    String apy = "accel_proc_y";
+    String apz = "accel_proc_z";
+    String apt = "accel_proc_time";
+    String arx = "accel_raw_x";
+    String ary = "accel_raw_y";
+    String arz = "accel_raw_z";
+    String art = "accel_raw_time";
+    String mpx = "mag_proc_x";
+    String mpy = "mag_proc_y";
+    String mpz = "mag_proc_z";
+    String mpt = "mag_proc_time";
+    String mrx = "mag_raw_x";
+    String mry = "mag_raw_y";
+    String mrz = "mag_raw_z";
+    String mrt = "mag_raw_time";
+    String r = "roll";
+    String p = "pitch";
+    String y = "yaw";
+    String rr = "roll_rate";
+    String pr = "pitch_rate";
+    String yr = "yaw_rate";
+    String et = "euler_time";
+    String temp = "temp";
+
+    double DD = 91.02222; // divider for degrees
+    double DR = 16.0;     // divider for rate
+
+    final Map<String, Object> output = new HashMap<>();
+    final DataInputStream is = new DataInputStream(new ByteArrayInputStream(data));
+
+    if (startAddress == UM7Constants.Registers.DREG_HEALTH) {
+      // (0x55,  85) Health register
+      output.put(health, is.readInt());
+    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_PROC_X) {
+      // (0x61,  97) Processed Data: gyro (deg/s) xyzt, accel (m/s²) xyzt, mag xyzt
+      output.put(gpx, is.readFloat()); //f
+      output.put(gpy, is.readFloat());
+      output.put(gpz, is.readFloat());
+      output.put(gpt, is.readFloat());
+
+      output.put(apx, is.readFloat());
+      output.put(apy, is.readFloat());
+      output.put(apz, is.readFloat());
+      output.put(apt, is.readFloat());
+
+      output.put(mpx, is.readFloat());
+      output.put(mpy, is.readFloat());
+      output.put(mpz, is.readFloat());
+      output.put(mpt, is.readFloat());
+
+    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_RAW_XY) {
+      // (0x56,  86) Raw Rate Gyro Data: gyro xyz#t, accel xyz#t, mag xyz#t, temp ct
+      output.put(grx, is.readShort() / DD); //h
+      output.put(gry, is.readShort() / DD);
+      output.put(grz, is.readShort() / DD);
+      is.skipBytes(2); //2x
+      output.put(grt, is.readFloat()); //f
+
+
+      output.put(arx, is.readShort() / DD); //h
+      output.put(ary, is.readShort() / DD);
+      output.put(arz, is.readShort() / DD);
+      is.skipBytes(2); //2x
+      output.put(art, is.readFloat()); //f
+
+      output.put(mrx, is.readShort()); //h
+      output.put(mry, is.readShort());
+      output.put(mrz, is.readShort());
+      is.skipBytes(2); //2x
+      output.put(mrt, is.readFloat()); //f
+      output.put(temp, is.readFloat()); //f
+      is.readFloat(); //f
+
+    } else if (startAddress == UM7Constants.Registers.DREG_ACCEL_PROC_X) {
+      // (0x65, 101) Processed Accel Data
+    } else if (startAddress == UM7Constants.Registers.DREG_EULER_PHI_THETA) {
+      // (0x70, 112) Processed Euler Data:
+      output.put(r, is.readShort() / DD); //h
+      output.put(p, is.readShort() / DD); //h
+      output.put(y, is.readShort() / DD); //h
+      is.skipBytes(2); //2x
+      output.put(rr, is.readShort() / DR); //h
+      output.put(pr, is.readShort() / DR); //h
+      output.put(yr, is.readShort() / DR); //h
+      is.skipBytes(2); //2x
+      output.put(et, is.readFloat()); //f
+
+    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_BIAS_X) {
+      //(0x89, 137) gyro bias xyz
+      // values=struct.unpack('!fff', data)
+    } else if (startAddress == UM7Constants.Registers.CREG_GYRO_TRIM_X) {
+      // (0x0C,  12)
+      // values=struct.unpack('!fff', data)
+    } else {
+      System.out.println(String.format("batch pack start=0x%4x len=%4d", startAddress, data.length));
+      return null;
+    }
+    return output;
+  }
 
   private UM7Packet readRegistry(final byte start, final byte length)
       throws OperationTimeoutException, DeviceConnectionException {
@@ -373,12 +484,6 @@ public class DefaultUM7Client implements UM7Client {
                                   boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException {
     return writeRegistry(start, length, data, UM7Constants.Defaults.OPERATION_TIMEOUT, noRead);
-  }
-
-  @Override
-  public UM7Packet writeRegistry(final byte start)
-      throws OperationTimeoutException, DeviceConnectionException {
-    return writeRegistry(start, (byte)1, null, UM7Constants.Defaults.OPERATION_TIMEOUT, false);
   }
 
   private byte[] makePack(byte pt, byte sa, byte[] payload) {
@@ -408,4 +513,6 @@ public class DefaultUM7Client implements UM7Client {
     ba[i] = (byte)( cs & 0xFF);
     return ba;
   }
+
+
 }

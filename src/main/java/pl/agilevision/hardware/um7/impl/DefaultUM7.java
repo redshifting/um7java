@@ -1,15 +1,12 @@
 package pl.agilevision.hardware.um7.impl;
 
-import com.fazecast.jSerialComm.SerialPort;
 import pl.agilevision.hardware.um7.UM7;
 import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
