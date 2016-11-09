@@ -24,7 +24,7 @@ public class AbstractDeviceTest {
     System.out.println(String.format("[ %-70s ]", message));
   }
 
-  protected void withDevice(Expression expression) throws DeviceConnectionException {
+  protected void withDevice(Expression expression) throws DeviceConnectionException, OperationTimeoutException {
     final UM7Client client = new DefaultUM7Client(TEST_DEVICE_NAME, TEST_PORT_NAME);
 
     try {
