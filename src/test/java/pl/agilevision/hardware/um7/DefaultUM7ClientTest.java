@@ -19,9 +19,6 @@ import static org.junit.Assert.assertTrue;
  */
 public class DefaultUM7ClientTest extends AbstractDeviceTest{
 
-  private static final String TEST_PORT_NAME = "COM3";
-  private static final String TEST_DEVICE_NAME = "um7";
-
   @Test
   public void testConnect() throws DeviceConnectionException {
     info("Connect check");

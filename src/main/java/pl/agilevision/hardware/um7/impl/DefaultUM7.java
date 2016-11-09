@@ -73,10 +73,11 @@ public class DefaultUM7 implements UM7 {
   public DefaultUM7(UM7Client um7Client, final String [] stateVars) {
     this.um7Client = um7Client;
     Map<String, Object> m = new HashMap<>();
-    state = new UMDataSample(m);
     for (String i : stateVars) {
-      state.getRawData().put(i, 0);
+      m.put(i, 0);
     }
+
+    state = new UMDataSample(m);
   }
 
   public boolean zeroGyros() throws DeviceConnectionException, OperationTimeoutException {
@@ -122,7 +123,7 @@ public class DefaultUM7 implements UM7 {
   }
 
   @Override
-  public UMDataSample getDateSample() throws DeviceConnectionException, OperationTimeoutException {
+  public UMDataSample readState() throws DeviceConnectionException, OperationTimeoutException {
 
     UM7Packet packet = this.um7Client.readPacket();
     if (!packet.foundpacket) {

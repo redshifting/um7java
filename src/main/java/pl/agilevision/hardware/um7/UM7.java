@@ -75,7 +75,7 @@ public interface UM7 {
    * @throws DeviceConnectionException in a case of the failure while communicating with the device
    * @throws OperationTimeoutException if the timeout passed before the operation finished
    */
-  UMDataSample getDateSample() throws DeviceConnectionException, OperationTimeoutException;
+  UMDataSample readState() throws DeviceConnectionException, OperationTimeoutException;
 
 
   UMDataSample getState();
