@@ -18,7 +18,7 @@ public interface UM7Client {
 
   void disconnect() throws DeviceConnectionException;
 
-  byte readByte();
+  int readByte();
 
   UM7Packet readPacket() throws DeviceConnectionException;
 
@@ -30,20 +30,18 @@ public interface UM7Client {
    * @return registry value
    * @throws OperationTimeoutException if the operation didn't finish in the given timeout
    */
-  UM7Packet readRegistry(final byte start, final byte length, final float timeout)
+  UM7Packet readRegistry(final int start, final int length, final float timeout)
       throws OperationTimeoutException, DeviceConnectionException;
-  UM7Packet writeRegistry(final byte start, final byte length, final byte[] data,
+  UM7Packet writeRegistry(final int start, final int length, final byte[] data,
                           final float timeout, final boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException;
 
-
   boolean setBaudRate(int baudRate) throws DeviceConnectionException, OperationTimeoutException;
 
-  UM7Packet readRegistry(byte start)
+  UM7Packet readRegistry(int start)
       throws OperationTimeoutException, DeviceConnectionException;
 
-  UM7Packet writeRegistry(byte start)
+  UM7Packet writeRegistry(int start)
       throws OperationTimeoutException, DeviceConnectionException;
 
-  Map<String, Object> catchSample() throws DeviceConnectionException;
 }

@@ -24,9 +24,6 @@ public class DefaultUM7Client implements UM7Client {
 
   private static final int DATA_BITS = 8;
   private static final int STOP_BITS = 1;
-  private static double DEGREES_DIVIDER = 91.02222; // divider for degrees
-  private static double RATE_DIVIDER = 16.0;     // divider for rate
-
 
   private SerialPort serialPort;
   private String deviceName;
@@ -34,7 +31,6 @@ public class DefaultUM7Client implements UM7Client {
   private int baudRate;
   private boolean connected;
   private long t0;
-  private Map<String, Object> state;
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final Map<Integer, Integer> baudRates;
@@ -56,22 +52,15 @@ public class DefaultUM7Client implements UM7Client {
   }
 
 
-  public DefaultUM7Client(final String deviceName, final String devicePort,
-                          final String [] stateVars) throws DeviceConnectionException {
-    this(deviceName, devicePort, stateVars, UM7Constants.Defaults.BAUD_RATE);
+  public DefaultUM7Client(final String deviceName, final String devicePort) throws DeviceConnectionException {
+    this(deviceName, devicePort, UM7Constants.Defaults.BAUD_RATE);
   }
 
-  public DefaultUM7Client(final String deviceName, final String devicePort,
-                          final String [] stateVars, int baudRate) throws DeviceConnectionException {
+  public DefaultUM7Client(final String deviceName, final String devicePort, int baudRate) throws DeviceConnectionException {
     this.deviceName = deviceName;
     this.devicePort = devicePort;
     this.baudRate = baudRate;
     t0 = System.nanoTime();
-
-    state = new HashMap<>();
-    for (String i : stateVars) {
-      state.put(i, 0);
-    }
 
     connect();
   }
@@ -132,13 +121,11 @@ public class DefaultUM7Client implements UM7Client {
     this.connected = false;
   }
 
-
-
   @Override
-  public byte readByte() {
+  public int readByte() {
     byte bytes[] = new byte[1];
     serialPort.readBytes(bytes, 1);
-    return bytes[0];
+    return bytes[0] & 0xFF;
   }
 
 
@@ -157,30 +144,30 @@ public class DefaultUM7Client implements UM7Client {
     while (System.nanoTime() - t0 < ns_timeout) {  //While elapsed time is less than timeout
       try {
         if (serialPort.bytesAvailable() >= 3) {
-          byte byte1 = this.readByte();
+          int byte1 = this.readByte();
           if (byte1 == 's') {
-            byte byte2 = this.readByte();
+            int byte2 = this.readByte();
             if (byte2 == 'n') {
-              byte byte3 = this.readByte();
+              int byte3 = this.readByte();
               if (byte3 == 'p') {
                 foundpacket = 1;
                 break;
               }
             }
           } else {
-            System.out.println("Non start paket s byte: " + byte1);
+            LOG.warn("Non start paket s byte: " + byte1);
           }
         } else {
           TimeUnit.MILLISECONDS.sleep(10);
         }
       } catch (InterruptedException e) {
-        System.out.print("Program interrupted");
+        LOG.warn("Program interrupted");
       }
     }
 
     int hasdata = 0;
     int commandfailed = 0;
-    byte startaddress = 0;
+    int startaddress = 0;
     byte[] data = null;
     int timeouted = 1;
 
@@ -193,20 +180,21 @@ public class DefaultUM7Client implements UM7Client {
     } else {
       timeouted = 0;
 
-      byte pt = this.readByte();
-      System.out.print(String.format("PT %d", pt));
+      int pt = this.readByte() & 0xFF;
       hasdata = pt & 0b10000000;
-      byte isbatch = (byte)(pt & 0b01000000);
+      int isbatch = (pt & 0b01000000);
       int numdatabytes = ((pt & 0b00111100) >> 2) * 4;
-      System.out.print(String.format("Data bytes number %d", numdatabytes));
+
       commandfailed = pt & 0b00000001;
-      byte hidden = (byte)(pt & 0b00000010);
-      if (isbatch != 0 ) {
+      int hidden = (byte)(pt & 0b00000010);
+      if (isbatch == 0 ) {
         numdatabytes = 4;
       }
 
-      startaddress = this.readByte();
-      System.out.print(String.format("Start address %d", startaddress));
+      startaddress = this.readByte() ;
+      LOG.debug(String.format("Pack read, pt: %s, sa: %X bytes %d",
+        String.format("%8s", Integer.toBinaryString(pt)).replace(' ', '0'), startaddress, numdatabytes));
+
       while (serialPort.bytesAvailable() < numdatabytes) {
         ;
       }
@@ -219,7 +207,14 @@ public class DefaultUM7Client implements UM7Client {
       }
 
       byte[] cs_bytes = new byte[2];
-      short cs =  (short)(cs_bytes[1] << 8 | cs_bytes[1]); // use network (big) endian
+      serialPort.readBytes(cs_bytes, 2);
+      final DataInputStream is = new DataInputStream(new ByteArrayInputStream(cs_bytes));
+      int cs = 0;
+      try {
+        cs = is.readShort();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
 
       int ocs = 0;
       ocs += (int)'s';
@@ -229,7 +224,7 @@ public class DefaultUM7Client implements UM7Client {
       ocs += startaddress;
       if (data != null) {
         for (byte b:data) {
-          ocs += b;
+          ocs += b & 0xFF;
         }
       }
 
@@ -237,7 +232,7 @@ public class DefaultUM7Client implements UM7Client {
         startaddress |= UM7Constants.Registers.REG_HIDDEN;
       }
       if (ocs != cs) {
-        System.out.print(String.format("bad checksum: %d (should be: %d)", cs, ocs));
+        LOG.error(String.format("bad checksum: %d (should be: %d)", cs, ocs));
         hasdata = 0;   // was for all ValueError
         commandfailed = 0;
         startaddress = 0;
@@ -248,14 +243,13 @@ public class DefaultUM7Client implements UM7Client {
   }
 
 
-  public UM7Packet readRegistry(final byte start, final byte length,
-                                final float timeout)
+  public UM7Packet readRegistry(final int start, final int length, final float timeout)
       throws OperationTimeoutException, DeviceConnectionException {
     long ns_timeout = (long) (timeout * 1.0e9);
 
-    short hidden = (short)(start & UM7Constants.Registers.REG_HIDDEN);
-    byte sa = (byte) (start & 0xFF);
-    byte pt = 0x0;
+    int hidden = (start & UM7Constants.Registers.REG_HIDDEN);
+    int sa = (start & 0xFF);
+    int pt = 0x0;
     if (length != 0) {
       pt = 0b01000000;
     }
@@ -277,7 +271,7 @@ public class DefaultUM7Client implements UM7Client {
     return new UM7Packet(false, false, start, null, true, true);
   }
 
-  public UM7Packet writeRegistry(final byte start, final byte length, final byte[] data,
+  public UM7Packet writeRegistry(final int start, final int length, final byte[] data,
                                  final float timeout, boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException {
     long ns_timeout = (long) (timeout * 1.0e9);
@@ -345,125 +339,29 @@ public class DefaultUM7Client implements UM7Client {
 
 
   @Override
-  public UM7Packet readRegistry(final byte start)
+  public UM7Packet readRegistry(final int start)
       throws OperationTimeoutException, DeviceConnectionException {
     return this.readRegistry(start, (byte) 0);
   }
 
   @Override
-  public UM7Packet writeRegistry(final byte start)
-      throws OperationTimeoutException, DeviceConnectionException {
+  public UM7Packet writeRegistry(final int start)
+    throws OperationTimeoutException, DeviceConnectionException {
     return writeRegistry(start, (byte)1, null, UM7Constants.Defaults.OPERATION_TIMEOUT, false);
   }
 
-  @Override
-  public Map<String, Object> catchSample() throws DeviceConnectionException {
-    UM7Packet packet = this.readPacket();
-    if (!packet.foundpacket) {
-      return null;
-    }
-
-    try {
-      Map<String, Object> sample = this.parseDataBatch(packet.data, packet.startaddress);
-      if (sample != null) {
-        this.state.putAll(sample);
-      }
-      return sample;
-    } catch (final Exception e){
-      throw new DeviceConnectionException("Failed to catch sample", e);
-    }
-  }
-
-  private Map<String, Object> parseDataBatch(byte[] data, byte startAddress) throws IOException {
-
-
-    final Map<String, Object> output = new HashMap<>();
-    final DataInputStream is = new DataInputStream(new ByteArrayInputStream(data));
-
-    if (startAddress == UM7Constants.Registers.DREG_HEALTH) {
-      // (0x55,  85) Health register
-      output.put(UM17Attributes.Health, is.readInt());
-    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_PROC_X) {
-      // (0x61,  97) Processed Data: gyro (deg/s) xyzt, accel (m/s²) xyzt, mag xyzt
-
-      output.put(UM17Attributes.Gyro.Processed.X, is.readFloat()); //f
-      output.put(UM17Attributes.Gyro.Processed.Y, is.readFloat());
-      output.put(UM17Attributes.Gyro.Processed.Z, is.readFloat());
-      output.put(UM17Attributes.Gyro.Processed.Time, is.readFloat());
-
-      output.put(UM17Attributes.Accelerator.Processed.X, is.readFloat());
-      output.put(UM17Attributes.Accelerator.Processed.Y, is.readFloat());
-      output.put(UM17Attributes.Accelerator.Processed.Z, is.readFloat());
-      output.put(UM17Attributes.Accelerator.Processed.Time, is.readFloat());
-
-      output.put(UM17Attributes.Magnetometer.Processed.X, is.readFloat());
-      output.put(UM17Attributes.Magnetometer.Processed.Y, is.readFloat());
-      output.put(UM17Attributes.Magnetometer.Processed.Z, is.readFloat());
-      output.put(UM17Attributes.Magnetometer.Processed.Time, is.readFloat());
-
-    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_RAW_XY) {
-      // (0x56,  86) Raw Rate Gyro Data: gyro xyz#t, accel xyz#t, mag xyz#t, temp ct
-
-      output.put(UM17Attributes.Gyro.Raw.X, is.readShort() / DEGREES_DIVIDER); //h
-      output.put(UM17Attributes.Gyro.Raw.Y, is.readShort() / DEGREES_DIVIDER);
-      output.put(UM17Attributes.Gyro.Raw.Z, is.readShort() / DEGREES_DIVIDER);
-      is.skipBytes(2); //2x
-      output.put(UM17Attributes.Gyro.Raw.Time, is.readFloat()); //f
-
-
-      output.put(UM17Attributes.Accelerator.Raw.X, is.readShort() / DEGREES_DIVIDER); //h
-      output.put(UM17Attributes.Accelerator.Raw.Y, is.readShort() / DEGREES_DIVIDER);
-      output.put(UM17Attributes.Accelerator.Raw.Z, is.readShort() / DEGREES_DIVIDER);
-      is.skipBytes(2); //2x
-      output.put(UM17Attributes.Accelerator.Raw.Time, is.readFloat()); //f
-
-      output.put(UM17Attributes.Magnetometer.Raw.X, is.readShort()); //h
-      output.put(UM17Attributes.Magnetometer.Raw.Y, is.readShort());
-      output.put(UM17Attributes.Magnetometer.Raw.Z, is.readShort());
-      is.skipBytes(2); //2x
-      output.put(UM17Attributes.Magnetometer.Raw.Time, is.readShort());
-      output.put(UM17Attributes.Temperature, is.readFloat()); //f
-      is.readFloat(); //f
-
-    } else if (startAddress == UM7Constants.Registers.DREG_ACCEL_PROC_X) {
-      // (0x65, 101) Processed Accel Data
-    } else if (startAddress == UM7Constants.Registers.DREG_EULER_PHI_THETA) {
-      // (0x70, 112) Processed Euler Data:
-      output.put(UM17Attributes.Roll, is.readShort() / DEGREES_DIVIDER); //h
-      output.put(UM17Attributes.Pitch, is.readShort() / DEGREES_DIVIDER); //h
-      output.put(UM17Attributes.Yaw, is.readShort() / DEGREES_DIVIDER); //h
-      is.skipBytes(2); //2x
-      output.put(UM17Attributes.RollRate, is.readShort() / RATE_DIVIDER); //h
-      output.put(UM17Attributes.PitchRate, is.readShort() / RATE_DIVIDER); //h
-      output.put(UM17Attributes.YawRate, is.readShort() / RATE_DIVIDER); //h
-      is.skipBytes(2); //2x
-      output.put(UM17Attributes.EulerTime, is.readFloat()); //f
-
-    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_BIAS_X) {
-      //(0x89, 137) gyro bias xyz
-      // values=struct.unpack('!fff', data)
-    } else if (startAddress == UM7Constants.Registers.CREG_GYRO_TRIM_X) {
-      // (0x0C,  12)
-      // values=struct.unpack('!fff', data)
-    } else {
-      LOG.debug(String.format("batch pack start=0x%4x len=%4d", startAddress, data.length));
-      return null;
-    }
-    return output;
-  }
-
-  private UM7Packet readRegistry(final byte start, final byte length)
+  private UM7Packet readRegistry(final int start, final int length)
       throws OperationTimeoutException, DeviceConnectionException {
     return readRegistry(start, length, UM7Constants.Defaults.OPERATION_TIMEOUT);
   }
 
-  private UM7Packet writeRegistry(final byte start, final byte length, final byte[] data,
+  private UM7Packet writeRegistry(final int start, final int length, final byte[] data,
                                   boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException {
     return writeRegistry(start, length, data, UM7Constants.Defaults.OPERATION_TIMEOUT, noRead);
   }
 
-  private byte[] makePack(byte pt, byte sa, byte[] payload) {
+  private byte[] makePack(int pt, int sa, byte[] payload) {
     int payloadLength = 0;
     if (payload != null) {
       payloadLength = payload.length;
@@ -473,8 +371,8 @@ public class DefaultUM7Client implements UM7Client {
     ba[0] = 's';
     ba[1] = 'n';
     ba[2] = 'p';
-    ba[3] = pt;
-    ba[4] = sa;
+    ba[3] = (byte) pt;
+    ba[4] = (byte) sa;
     int i = 5;
     if (payload != null) {
       for (byte b : payload) {
@@ -484,7 +382,7 @@ public class DefaultUM7Client implements UM7Client {
 
     short cs = 0;
     for (int j=0; j < i; j++) {
-      cs += ba[j];
+      cs += ba[j] & 0xff;  // & 0xff this gets unsigned value from byte
     }
     ba[i++] = (byte)( (cs >> 8) & 0xFF);
     ba[i] = (byte)( cs & 0xFF);

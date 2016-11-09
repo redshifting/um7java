@@ -13,6 +13,10 @@ public class UMDataSample{
     this.data = data;
   }
 
+  public void update(UMDataSample sample) {
+    this.data.putAll(sample.getRawData());
+  }
+
   /**
    * Returns raw data
    * @return raw data
@@ -28,10 +32,13 @@ public class UMDataSample{
    * @param <T> property type class
    * @return property value casted to T or null
    */
-  public <T> T  getValue(final String property, Class<T> type){
+  public <T> T getValue(final String property, Class<T> type){
     return (T)data.get(property);
   }
 
+  public Object getUntypedValue(final String property) {
+    return data.get(property);
+  }
 
   /**
    * Returns property value as String or null if no property exists
@@ -42,7 +49,7 @@ public class UMDataSample{
     return String.valueOf(data.get(property));
   }
 
-  boolean hasValue(final String property){
+  public boolean hasValue(final String property){
     return data.containsKey(property);
   }
 
