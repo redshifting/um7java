@@ -18,6 +18,8 @@ public interface UM7Client {
 
   void disconnect() throws DeviceConnectionException;
 
+  boolean isConnected();
+
   int readByte();
 
   UM7Packet readPacket() throws DeviceConnectionException;

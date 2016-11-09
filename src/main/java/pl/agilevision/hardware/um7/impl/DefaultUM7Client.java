@@ -122,6 +122,11 @@ public class DefaultUM7Client implements UM7Client {
   }
 
   @Override
+  public boolean isConnected() {
+    return connected;
+  }
+
+  @Override
   public int readByte() {
     byte bytes[] = new byte[1];
     serialPort.readBytes(bytes, 1);

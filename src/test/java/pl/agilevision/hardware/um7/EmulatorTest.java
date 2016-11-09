@@ -1,5 +1,6 @@
 package pl.agilevision.hardware.um7;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import pl.agilevision.hardware.um7.data.UMDataSample;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
@@ -8,16 +9,15 @@ import pl.agilevision.hardware.um7.impl.DefaultUM7;
 import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
 
 import java.io.IOException;
-import java.text.Format;
-import java.util.Map;
 
 /**
  * Created by volodymyr on 07.11.16.
  */
-public class MockTest {
+public class EmulatorTest {
 
   @Test
-  public void testMock() throws DeviceConnectionException, OperationTimeoutException {
+  @Ignore
+  public void testConnection() throws DeviceConnectionException, OperationTimeoutException {
 
     String[] statevars = new String[] {
       "health", "roll", "pitch", "yaw", "mag_proc_x", "mag_proc_y", "mag_proc_z", "mag_raw_x", "mag_raw_y", "mag_raw_z",
