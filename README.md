@@ -1,6 +1,6 @@
 # UM7 Java Adapter
 
-This library provides an interface to interact with the UM7 device using a serial port
+This library provides an interface to interact with the UM7 device using a serial port.
 
 
 ## Build

@@ -1,5 +1,6 @@
 package pl.agilevision.hardware.um7;
 
+import pl.agilevision.hardware.um7.data.UMDataSample;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
@@ -64,4 +65,12 @@ public interface UM7 {
    * @throws OperationTimeoutException if the timeout passed before the operation finished
    */
   String getFirmwareVersion()  throws DeviceConnectionException, OperationTimeoutException;
+
+  /**
+   * Reads a data sample
+   * @return data sample
+   * @throws DeviceConnectionException in a case of the failure while communicating with the device
+   * @throws OperationTimeoutException if the timeout passed before the operation finished
+   */
+  UMDataSample getDateSample() throws DeviceConnectionException, OperationTimeoutException;
 }

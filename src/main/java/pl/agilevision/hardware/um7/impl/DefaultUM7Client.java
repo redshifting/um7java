@@ -356,19 +356,25 @@ public class DefaultUM7Client implements UM7Client {
     return writeRegistry(start, (byte)1, null, UM7Constants.Defaults.OPERATION_TIMEOUT, false);
   }
 
-  public Map<String, Object> catchSample() throws DeviceConnectionException, IOException {
+  @Override
+  public Map<String, Object> catchSample() throws DeviceConnectionException {
     UM7Packet packet = this.readPacket();
     if (!packet.foundpacket) {
       return null;
     }
-    Map<String, Object> sample = this.parseDataBatch(packet.data, packet.startaddress);
-    if (sample != null) {
-      this.state.putAll(sample);
+
+    try {
+      Map<String, Object> sample = this.parseDataBatch(packet.data, packet.startaddress);
+      if (sample != null) {
+        this.state.putAll(sample);
+      }
+      return sample;
+    } catch (final Exception e){
+      throw new DeviceConnectionException("Failed to catch sample", e);
     }
-    return sample;
   }
 
-  private Map parseDataBatch(byte[] data, byte startAddress) throws IOException {
+  private Map<String, Object> parseDataBatch(byte[] data, byte startAddress) throws IOException {
 
 
     final Map<String, Object> output = new HashMap<>();

@@ -4,6 +4,9 @@ import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
+import java.io.IOException;
+import java.util.Map;
+
 /**
  * Low-level UM7 client for IO operations with the UM7 device
  * @author Ivan Borschov (iborschov@agilevision.pl)
@@ -41,4 +44,6 @@ public interface UM7Client {
 
   UM7Packet writeRegistry(byte start)
       throws OperationTimeoutException, DeviceConnectionException;
+
+  Map<String, Object> catchSample() throws DeviceConnectionException;
 }

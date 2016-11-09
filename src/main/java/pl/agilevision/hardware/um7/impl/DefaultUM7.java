@@ -3,6 +3,7 @@ package pl.agilevision.hardware.um7.impl;
 import pl.agilevision.hardware.um7.UM7;
 import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.data.UM7Packet;
+import pl.agilevision.hardware.um7.data.UMDataSample;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
@@ -56,5 +57,10 @@ public class DefaultUM7 implements UM7 {
     }
 
     return p.data.toString();
+  }
+
+  @Override
+  public UMDataSample getDateSample() throws DeviceConnectionException, OperationTimeoutException {
+    return new UMDataSample(this.um7Client.catchSample());
   }
 }
