@@ -30,7 +30,6 @@ public class DefaultUM7Client implements UM7Client {
   private String devicePort;
   private int baudRate;
   private boolean connected;
-  private long t0;
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final Map<Integer, Integer> baudRates;
@@ -60,7 +59,6 @@ public class DefaultUM7Client implements UM7Client {
     this.deviceName = deviceName;
     this.devicePort = devicePort;
     this.baudRate = baudRate;
-    t0 = System.nanoTime();
 
     connect();
   }
@@ -144,7 +142,7 @@ public class DefaultUM7Client implements UM7Client {
   public UM7Packet readPacket(float timeout) throws DeviceConnectionException {
     long ns_timeout = (long) (timeout * 1.0e9);
     int foundpacket = 0;
-    t0 = System.nanoTime();
+    long t0 = System.nanoTime();
 
     while (System.nanoTime() - t0 < ns_timeout) {  //While elapsed time is less than timeout
       try {
@@ -266,7 +264,7 @@ public class DefaultUM7Client implements UM7Client {
     byte[] ba = this.makePack(pt, sa, null);
     serialPort.writeBytes(ba, ba.length);
 
-    t0 = System.nanoTime();
+    long t0 = System.nanoTime();
     while (System.nanoTime() - t0 < ns_timeout) { // While elapsed time is less than timeout
       UM7Packet packet = readPacket();
       if (packet.startaddress == start) {
@@ -298,7 +296,7 @@ public class DefaultUM7Client implements UM7Client {
       return new UM7Packet(false, false, start, null, true, false);
     }
 
-    t0 = System.nanoTime();
+    long t0 = System.nanoTime();
     while (System.nanoTime() - t0 < ns_timeout) { // While elapsed time is less than timeout
       UM7Packet packet = this.readPacket();
       if (packet.startaddress == start) {
