@@ -1,12 +1,9 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.UMDataSample;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 import pl.agilevision.hardware.um7.impl.DefaultUM7;
 import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
-
-import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 

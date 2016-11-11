@@ -1,11 +1,10 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.UMDataSample;
+import pl.agilevision.hardware.um7.data.UM7DataSample;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Interface to interact with the UM7 device
@@ -75,10 +74,10 @@ public interface UM7 {
    * @throws DeviceConnectionException in a case of the failure while communicating with the device
    * @throws OperationTimeoutException if the timeout passed before the operation finished
    */
-  UMDataSample readState() throws DeviceConnectionException, OperationTimeoutException;
+  UM7DataSample readState() throws DeviceConnectionException, OperationTimeoutException;
 
 
-  UMDataSample getState();
+  UM7DataSample getState();
 
   boolean catchAllSamples(final String [] wantedState, float timeout) throws DeviceConnectionException, IOException;
 }

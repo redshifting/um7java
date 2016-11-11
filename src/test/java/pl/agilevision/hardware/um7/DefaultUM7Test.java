@@ -1,7 +1,7 @@
 package pl.agilevision.hardware.um7;
 
 import org.junit.Test;
-import pl.agilevision.hardware.um7.data.UMDataSample;
+import pl.agilevision.hardware.um7.data.UM7DataSample;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
@@ -21,7 +21,7 @@ public class DefaultUM7Test extends AbstractDeviceTest {
     withDevice(um7 -> {
 
       // When
-      final UMDataSample state = um7.readState();
+      final UM7DataSample state = um7.readState();
 
       // Then
       assertNotNull(state);

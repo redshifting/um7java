@@ -1,4 +1,4 @@
-package pl.agilevision.hardware.um7.impl;
+package pl.agilevision.hardware.um7;
 
 /**
  * Interface contains all UM7-related constants splitted by their type

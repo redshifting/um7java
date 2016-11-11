@@ -1,4 +1,4 @@
-package pl.agilevision.hardware.um7.impl;
+package pl.agilevision.hardware.um7;
 
 /**
  * Describes available UM7 properties

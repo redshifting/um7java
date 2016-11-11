@@ -6,14 +6,14 @@ import java.util.Map;
  * Describes a data sample of the UM7
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
-public class UMDataSample{
+public class UM7DataSample {
   private Map<String, Object> data;
 
-  public UMDataSample(Map<String, Object> data) {
+  public UM7DataSample(Map<String, Object> data) {
     this.data = data;
   }
 
-  public void update(UMDataSample sample) {
+  public void update(UM7DataSample sample) {
     this.data.putAll(sample.getRawData());
   }
 

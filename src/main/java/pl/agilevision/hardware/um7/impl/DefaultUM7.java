@@ -2,10 +2,12 @@ package pl.agilevision.hardware.um7.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pl.agilevision.hardware.um7.UM17Attributes;
 import pl.agilevision.hardware.um7.UM7;
 import pl.agilevision.hardware.um7.UM7Client;
+import pl.agilevision.hardware.um7.UM7Constants;
 import pl.agilevision.hardware.um7.data.UM7Packet;
-import pl.agilevision.hardware.um7.data.UMDataSample;
+import pl.agilevision.hardware.um7.data.UM7DataSample;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
@@ -23,20 +25,20 @@ public class DefaultUM7 implements UM7 {
 
   private UM7Client um7Client;
 
-  private UMDataSample state;
+  private UM7DataSample state;
 
   private static double DEGREES_DIVIDER = 91.02222; // divider for degrees
   private static double RATE_DIVIDER = 16.0;     // divider for rate
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
 
-  public UMDataSample getState() {
+  public UM7DataSample getState() {
     return state;
   }
 
   @Override
   public boolean catchAllSamples(final String [] wantedState, float timeout) throws DeviceConnectionException, IOException {
     Map<String, Object> m = new HashMap<>();
-    UMDataSample sample = new UMDataSample(m);
+    UM7DataSample sample = new UM7DataSample(m);
     long t0 = System.nanoTime();
     long ns_timeout = (long) (timeout * 1.0e9);
     boolean all_found = false;
@@ -46,7 +48,7 @@ public class DefaultUM7 implements UM7 {
       packet = this.um7Client.readPacket();
 
       if (packet.foundpacket) {
-        UMDataSample newsample = null;
+        UM7DataSample newsample = null;
         newsample = this.parseDataBatch(packet.data, packet.startaddress);
         if (newsample != null) {
           sample.update(newsample);
@@ -76,7 +78,7 @@ public class DefaultUM7 implements UM7 {
       m.put(i, 0);
     }
 
-    state = new UMDataSample(m);
+    state = new UM7DataSample(m);
   }
 
   public boolean zeroGyros() throws DeviceConnectionException, OperationTimeoutException {
@@ -122,7 +124,7 @@ public class DefaultUM7 implements UM7 {
   }
 
   @Override
-  public UMDataSample readState() throws DeviceConnectionException, OperationTimeoutException {
+  public UM7DataSample readState() throws DeviceConnectionException, OperationTimeoutException {
 
     UM7Packet packet = this.um7Client.readPacket();
     if (!packet.foundpacket) {
@@ -130,7 +132,7 @@ public class DefaultUM7 implements UM7 {
     }
 
     try {
-      UMDataSample sample = this.parseDataBatch(packet.data, packet.startaddress);
+      UM7DataSample sample = this.parseDataBatch(packet.data, packet.startaddress);
       if (sample != null) {
         this.state.update(sample);
       }
@@ -144,7 +146,7 @@ public class DefaultUM7 implements UM7 {
 
 
 
-  private UMDataSample parseDataBatch(byte[] data, int startAddress) throws IOException {
+  private UM7DataSample parseDataBatch(byte[] data, int startAddress) throws IOException {
 
 
     final Map<String, Object> output = new HashMap<>();
@@ -219,7 +221,7 @@ public class DefaultUM7 implements UM7 {
       LOG.debug(String.format("batch pack start=0x%4x len=%4d", startAddress, data.length));
       return null;
     }
-    return new UMDataSample(output);
+    return new UM7DataSample(output);
   }
 
 }

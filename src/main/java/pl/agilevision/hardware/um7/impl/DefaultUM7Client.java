@@ -4,6 +4,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.agilevision.hardware.um7.UM7Client;
+import pl.agilevision.hardware.um7.UM7Constants;
 import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;

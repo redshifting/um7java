@@ -2,7 +2,6 @@ package pl.agilevision.hardware.um7;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import pl.agilevision.hardware.um7.data.UMDataSample;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 import pl.agilevision.hardware.um7.impl.DefaultUM7;
