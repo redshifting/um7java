@@ -19,8 +19,9 @@ build it:
 ### Environment preparation
 
 To build the library the following environment variables shoudl be set:
-* JAVA_HOME - should point to the location of the JDK
-* MAVEN_HOME - should point to the location of the Maven distribution
+
+* *JAVA_HOME* - should point to the location of the JDK
+* *MAVEN_HOME* - should point to the location of the Maven distribution
 
 ### Compiling the code
 Once required steps are performed, the library can be built using 
