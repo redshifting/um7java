@@ -24,6 +24,8 @@ public class DefaultUM7Client implements UM7Client {
 
   private static final int DATA_BITS = 8;
   private static final int STOP_BITS = 1;
+  private static final double NANOSECONDS_MULTIPLIER = 1.0e9;
+  private static final long READ_DELAY_IN_NANOSECONDS = 10;
 
   private SerialPort serialPort;
   private String deviceName;
@@ -140,11 +142,11 @@ public class DefaultUM7Client implements UM7Client {
   /** Scans for and partially parses new data packets. Binary data can then be sent to data parser
    :return: Parsed packet info */
   public UM7Packet readPacket(float timeout) throws DeviceConnectionException {
-    long ns_timeout = (long) (timeout * 1.0e9);
-    int foundpacket = 0;
+    final long timeoutInNanoseconds = (long) (timeout * NANOSECONDS_MULTIPLIER);
+    int packetFound = 0;
     long t0 = System.nanoTime();
 
-    while (System.nanoTime() - t0 < ns_timeout) {  //While elapsed time is less than timeout
+    while (System.nanoTime() - t0 < timeoutInNanoseconds) {
       try {
         if (serialPort.bytesAvailable() >= 3) {
           int byte1 = this.readByte();
@@ -153,15 +155,13 @@ public class DefaultUM7Client implements UM7Client {
             if (byte2 == 'n') {
               int byte3 = this.readByte();
               if (byte3 == 'p') {
-                foundpacket = 1;
+                packetFound = 1;
                 break;
               }
             }
-          } else {
-            LOG.warn("Non start paket s byte: " + byte1);
-          }
+          } 
         } else {
-          TimeUnit.MILLISECONDS.sleep(10);
+          TimeUnit.MILLISECONDS.sleep(READ_DELAY_IN_NANOSECONDS);
         }
       } catch (InterruptedException e) {
         LOG.warn("Program interrupted");
@@ -174,7 +174,7 @@ public class DefaultUM7Client implements UM7Client {
     byte[] data = null;
     int timeouted = 1;
 
-    if (foundpacket == 0) {
+    if (packetFound == 0) {
       hasdata = 0;
       commandfailed = 0;
       startaddress = 0;
@@ -242,10 +242,11 @@ public class DefaultUM7Client implements UM7Client {
         data = null;
       }
     }
-    return new UM7Packet(foundpacket == 1, hasdata == 1, startaddress, data, commandfailed == 1, timeouted == 1);
+    return new UM7Packet(packetFound == 1, hasdata == 1, startaddress, data, commandfailed == 1, timeouted == 1);
   }
 
 
+  @Override
   public UM7Packet readRegistry(final int start, final int length, final float timeout)
       throws OperationTimeoutException, DeviceConnectionException {
     long ns_timeout = (long) (timeout * 1.0e9);
@@ -274,6 +275,7 @@ public class DefaultUM7Client implements UM7Client {
     return new UM7Packet(false, false, start, null, true, true);
   }
 
+  @Override
   public UM7Packet writeRegistry(final int start, final int length, final byte[] data,
                                  final float timeout, boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException {
@@ -358,11 +360,6 @@ public class DefaultUM7Client implements UM7Client {
     return readRegistry(start, length, UM7Constants.Defaults.OPERATION_TIMEOUT);
   }
 
-  private UM7Packet writeRegistry(final int start, final int length, final byte[] data,
-                                  boolean noRead)
-      throws OperationTimeoutException, DeviceConnectionException {
-    return writeRegistry(start, length, data, UM7Constants.Defaults.OPERATION_TIMEOUT, noRead);
-  }
 
   private byte[] makePack(int pt, int sa, byte[] payload) {
     int payloadLength = 0;
