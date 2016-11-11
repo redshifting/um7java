@@ -26,10 +26,6 @@ public class DefaultUM7Client implements UM7Client {
   private static final int STOP_BITS = 1;
   private static final double NANOSECONDS_MULTIPLIER = 1.0e9;
   private static final long READ_DELAY_IN_NANOSECONDS = 10;
-  private static final byte NEW_PACKET_PREFIX_1 = 's';
-  private static final byte NEW_PACKET_PREFIX_2 = 'n';
-  private static final byte NEW_PACKET_PREFIX_3 = 'p';
-
 
   private SerialPort serialPort;
   private String deviceName;
@@ -131,10 +127,10 @@ public class DefaultUM7Client implements UM7Client {
   }
 
   @Override
-  public byte readByte() {
+  public int readByte() {
     byte bytes[] = new byte[1];
     serialPort.readBytes(bytes, 1);
-    return bytes[0];
+    return bytes[0] & 0xFF;
   }
 
 
@@ -153,18 +149,17 @@ public class DefaultUM7Client implements UM7Client {
     while (System.nanoTime() - t0 < timeoutInNanoseconds) {
       try {
         if (serialPort.bytesAvailable() >= 3) {
-          byte byte1 = this.readByte();
-          if (byte1 == NEW_PACKET_PREFIX_1) {
-            byte byte2 = this.readByte();
-            if (byte2 == NEW_PACKET_PREFIX_2) {
-              byte byte3 = this.readByte();
-              if (byte3 == NEW_PACKET_PREFIX_3) {
+          int byte1 = this.readByte();
+          if (byte1 == 's') {
+            int byte2 = this.readByte();
+            if (byte2 == 'n') {
+              int byte3 = this.readByte();
+              if (byte3 == 'p') {
                 packetFound = 1;
                 break;
               }
             }
           }
-
         } else {
           TimeUnit.MILLISECONDS.sleep(READ_DELAY_IN_NANOSECONDS);
         }
@@ -204,11 +199,7 @@ public class DefaultUM7Client implements UM7Client {
         String.format("%8s", Integer.toBinaryString(pt)).replace(' ', '0'), startaddress, numdatabytes));
 
       while (serialPort.bytesAvailable() < numdatabytes) {
-        try {
-          TimeUnit.MILLISECONDS.sleep(READ_DELAY_IN_NANOSECONDS);
-        } catch (InterruptedException e) {
-          //
-        }
+        ;
       }
 
       if (hasdata != 0 ) {
@@ -228,15 +219,15 @@ public class DefaultUM7Client implements UM7Client {
         e.printStackTrace();
       }
 
-      short ocs = 0;
-      ocs += NEW_PACKET_PREFIX_1;
-      ocs += NEW_PACKET_PREFIX_2;
-      ocs += NEW_PACKET_PREFIX_3;
+      int ocs = 0;
+      ocs += (int)'s';
+      ocs += (int)'n';
+      ocs += (int)'p';
       ocs += pt;
       ocs += startaddress;
       if (data != null) {
         for (byte b:data) {
-          ocs += b;
+          ocs += b & 0xFF;
         }
       }
 

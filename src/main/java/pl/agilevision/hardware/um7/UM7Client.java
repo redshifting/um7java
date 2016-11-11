@@ -20,7 +20,7 @@ public interface UM7Client {
 
   boolean isConnected();
 
-  byte readByte();
+  int readByte();
 
   UM7Packet readPacket() throws DeviceConnectionException;
 
