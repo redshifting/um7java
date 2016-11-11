@@ -204,7 +204,11 @@ public class DefaultUM7Client implements UM7Client {
         String.format("%8s", Integer.toBinaryString(pt)).replace(' ', '0'), startaddress, numdatabytes));
 
       while (serialPort.bytesAvailable() < numdatabytes) {
-        ;
+        try {
+          TimeUnit.MILLISECONDS.sleep(READ_DELAY_IN_NANOSECONDS);
+        } catch (InterruptedException e) {
+          //
+        }
       }
 
       if (hasdata != 0 ) {
@@ -224,15 +228,15 @@ public class DefaultUM7Client implements UM7Client {
         e.printStackTrace();
       }
 
-      int ocs = 0;
-      ocs += (int)'s';
-      ocs += (int)'n';
-      ocs += (int)'p';
+      short ocs = 0;
+      ocs += NEW_PACKET_PREFIX_1;
+      ocs += NEW_PACKET_PREFIX_2;
+      ocs += NEW_PACKET_PREFIX_3;
       ocs += pt;
       ocs += startaddress;
       if (data != null) {
         for (byte b:data) {
-          ocs += b & 0xFF;
+          ocs += b;
         }
       }
 
