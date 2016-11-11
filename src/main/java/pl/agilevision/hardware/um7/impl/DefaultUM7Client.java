@@ -153,11 +153,16 @@ public class DefaultUM7Client implements UM7Client {
     while (System.nanoTime() - t0 < timeoutInNanoseconds) {
       try {
         if (serialPort.bytesAvailable() >= 3) {
-
-          if (readByte() == NEW_PACKET_PREFIX_1
-              && readByte() == NEW_PACKET_PREFIX_2
-              && readByte() == NEW_PACKET_PREFIX_3){
-            break;
+          byte byte1 = this.readByte();
+          if (byte1 == NEW_PACKET_PREFIX_1) {
+            byte byte2 = this.readByte();
+            if (byte2 == NEW_PACKET_PREFIX_2) {
+              byte byte3 = this.readByte();
+              if (byte3 == NEW_PACKET_PREFIX_3) {
+                packetFound = 1;
+                break;
+              }
+            }
           }
 
         } else {
