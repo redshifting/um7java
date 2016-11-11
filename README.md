@@ -77,7 +77,7 @@ import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
 // Create an instance of the DefaultUM7Client to establish the connection with the device:
 final UM7Client um7Client = new DefaultUM7Client("UM7", "COM3");
 // Create an UM7 instance to perform high-level commands
-final UM7 um7 = new DefaultUM7(um7Client);
+final UM7 um7 = new DefaultUM7(um7Client, new String[0]);
 
 // Reset the device
 um7.zeroGyros()
