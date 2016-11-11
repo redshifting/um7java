@@ -90,3 +90,38 @@ final UM7DataSample sample = um7.readState();
 um7Client.disconnect();
 
 ```
+
+
+### Processing
+
+To use the library from the Processing, it should be added to the sketch first. The simplest way to do it is to drag-n-drop the library
+to the Editor window.
+
+
+Here is an example of the simple Processing script that uses the library and displays a message box with the firmware version:
+
+```
+import pl.agilevision.hardware.um7.UM7;
+import pl.agilevision.hardware.um7.UM7Client;
+import pl.agilevision.hardware.um7.impl.DefaultUM7;
+import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
+try{
+// Create an instance of the DefaultUM7Client to establish the connection with the device:
+final UM7Client um7Client = new DefaultUM7Client("UM7", "COM3");
+// Create an UM7 instance to perform high-level commands
+final UM7 um7 = new DefaultUM7(um7Client, new String[0]);
+
+// Reset the device
+um7.zeroGyros();
+
+// Read current data
+final UM7DataSample sample = um7.readState();
+javax.swing.JOptionPane.showMessageDialog(null, "Firmware version: " + um7.getFirmwareVersion());
+
+// Disconnect from the device to free the port
+um7Client.disconnect();
+
+} catch (final Exception e){
+  System.out.println("Error");
+}
+```
