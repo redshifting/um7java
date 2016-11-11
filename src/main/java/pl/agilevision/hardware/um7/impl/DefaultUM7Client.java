@@ -26,13 +26,14 @@ public class DefaultUM7Client implements UM7Client {
   private static final int STOP_BITS = 1;
   private static final double NANOSECONDS_MULTIPLIER = 1.0e9;
   private static final long READ_DELAY_IN_NANOSECONDS = 10;
-  private static final float TIMEOUT_IN_SECONDS = 0.1f;
+
 
   private SerialPort serialPort;
   private String deviceName;
   private String devicePort;
   private int baudRate;
   private boolean connected;
+  private final float defaultTimeoutInSeconds;
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final Map<Integer, Integer> baudRates;
@@ -55,13 +56,17 @@ public class DefaultUM7Client implements UM7Client {
 
 
   public DefaultUM7Client(final String deviceName, final String devicePort) throws DeviceConnectionException {
-    this(deviceName, devicePort, UM7Constants.Defaults.BAUD_RATE);
+    this(deviceName, devicePort, UM7Constants.Defaults.BAUD_RATE,
+        UM7Constants.Defaults.OPERATION_TIMEOUT_IN_SECONDS);
   }
 
-  public DefaultUM7Client(final String deviceName, final String devicePort, int baudRate) throws DeviceConnectionException {
+  public DefaultUM7Client(final String deviceName, final String devicePort,
+                          int baudRate,
+                          float defaultTimeoutInSeconds) throws DeviceConnectionException {
     this.deviceName = deviceName;
     this.devicePort = devicePort;
     this.baudRate = baudRate;
+    this.defaultTimeoutInSeconds = defaultTimeoutInSeconds;
 
     connect();
   }
@@ -127,17 +132,10 @@ public class DefaultUM7Client implements UM7Client {
     return connected;
   }
 
-  @Override
-  public int readByte() {
-    byte bytes[] = new byte[1];
-    serialPort.readBytes(bytes, 1);
-    return bytes[0] & 0xFF;
-  }
-
 
   @Override
   public UM7Packet readPacket() throws DeviceConnectionException {
-    return this.readPacket(TIMEOUT_IN_SECONDS);
+    return this.readPacket(defaultTimeoutInSeconds);
   }
 
   /** Scans for and partially parses new data packets. Binary data can then be sent to data parser
@@ -244,7 +242,7 @@ public class DefaultUM7Client implements UM7Client {
 
 
   @Override
-  public UM7Packet readRegistry(final int start, final int length, final float timeout)
+  public UM7Packet readRegister(final int start, final int length, final float timeout)
       throws OperationTimeoutException, DeviceConnectionException {
     long ns_timeout = (long) (timeout * 1.0e9);
 
@@ -273,7 +271,7 @@ public class DefaultUM7Client implements UM7Client {
   }
 
   @Override
-  public UM7Packet writeRegistry(final int start, final int length, final byte[] data,
+  public UM7Packet writeRegister(final int start, final int length, final byte[] data,
                                  final float timeout, boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException {
     long ns_timeout = (long) (timeout * 1.0e9);
@@ -310,7 +308,7 @@ public class DefaultUM7Client implements UM7Client {
   @Override
   public boolean setBaudRate(int baudRate) throws DeviceConnectionException, OperationTimeoutException {
     int new_baud = baudRates.get(baudRate) << 28;
-    UM7Packet p = this.readRegistry(UM7Constants.Registers.CREG_COM_SETTINGS);
+    UM7Packet p = this.readRegister(UM7Constants.Registers.CREG_COM_SETTINGS);
     if (p.commandfailed){
       return false;
     }
@@ -331,8 +329,8 @@ public class DefaultUM7Client implements UM7Client {
     ba[2] = (byte) ((cr >> 8) & 0xFF);
     ba[3] = (byte) (cr & 0xFF);
 
-    p = this.writeRegistry(UM7Constants.Registers.CREG_COM_SETTINGS,
-        (byte)1, ba, TIMEOUT_IN_SECONDS, true);
+    p = this.writeRegister(UM7Constants.Registers.CREG_COM_SETTINGS,
+        (byte)1, ba, defaultTimeoutInSeconds, true);
     if (p.commandfailed) {
       return false;
     }
@@ -342,20 +340,20 @@ public class DefaultUM7Client implements UM7Client {
 
 
   @Override
-  public UM7Packet readRegistry(final int start)
+  public UM7Packet readRegister(final int start)
       throws OperationTimeoutException, DeviceConnectionException {
-    return this.readRegistry(start, (byte) 0);
+    return this.readRegister(start, (byte) 0);
   }
 
   @Override
-  public UM7Packet writeRegistry(final int start)
+  public UM7Packet clearRegister(final int start)
     throws OperationTimeoutException, DeviceConnectionException {
-    return writeRegistry(start, (byte)1, null, UM7Constants.Defaults.OPERATION_TIMEOUT, false);
+    return writeRegister(start, (byte)1, null, defaultTimeoutInSeconds, false);
   }
 
-  private UM7Packet readRegistry(final int start, final int length)
+  private UM7Packet readRegister(final int start, final int length)
       throws OperationTimeoutException, DeviceConnectionException {
-    return readRegistry(start, length, UM7Constants.Defaults.OPERATION_TIMEOUT);
+    return readRegister(start, length, defaultTimeoutInSeconds);
   }
 
 
@@ -387,5 +385,9 @@ public class DefaultUM7Client implements UM7Client {
     return ba;
   }
 
-
+  public int readByte() {
+    byte bytes[] = new byte[1];
+    serialPort.readBytes(bytes, 1);
+    return bytes[0] & 0xFF;
+  }
 }

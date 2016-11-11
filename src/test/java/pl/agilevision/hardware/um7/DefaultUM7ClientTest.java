@@ -80,7 +80,7 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
 
       for(final Map.Entry<String, Integer> entry : registers.entrySet()){
         
-        final UM7Packet dataPacket = client.readRegistry(entry.getValue());
+        final UM7Packet dataPacket = client.readRegister(entry.getValue());
         final String message = String.format("Register [%-15s] contains value [%s]", entry.getKey(), encoder.encodeToString(dataPacket.data));
         System.out.println(message);
       }
