@@ -299,6 +299,7 @@ public class DefaultUM7Client implements UM7Client {
     while (System.nanoTime() - t0 < ns_timeout) { // While elapsed time is less than timeout
       UM7Packet packet = this.readPacket();
       if (packet.startaddress == start) {
+        LOG.debug("Found packet with address {}", start);
         return packet;
       }
     }
