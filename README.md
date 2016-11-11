@@ -44,17 +44,49 @@ to still get a compiled JAR file:
 mvn clean package -Dmaven.skip.test=true
 ```
 
-## Test
+### Test
 
 To run tests the following command can be used:
 ```
 mvn clean test
 ```
 
-## Local Maven repo installation
+### Local Maven repo installation
 
 
 The library can be installed to the local Maven repository to be used by other Maven artifacts using the following command:
 ```
 mvn clean install
+```
+
+ 
+## Library usage
+
+### Java
+Add **um7j-adapter.jar** to the classpath. Import and use it:
+
+```
+import pl.agilevision.hardware.um7.UM7;
+import pl.agilevision.hardware.um7.UM7Client;
+import pl.agilevision.hardware.um7.impl.DefaultUM7;
+import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
+
+// ...
+
+
+// Create an instance of the DefaultUM7Client to establish the connection with the device:
+final UM7Client um7Client = new DefaultUM7Client("UM7", "COM3");
+// Create an UM7 instance to perform high-level commands
+final UM7 um7 = new DefaultUM7(um7Client);
+
+// Reset the device
+um7.zeroGyros()
+
+// Read current data
+final UM7DataSample sample = um7.readState();
+
+
+// Disconnect from the device to free the port
+um7Client.disconnect();
+
 ```
