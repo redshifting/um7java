@@ -25,7 +25,6 @@ public class DefaultUM7Client implements UM7Client {
   private static final int DATA_BITS = 8;
   private static final int STOP_BITS = 1;
   private static final double NANOSECONDS_MULTIPLIER = 1.0e9;
-  private static final long READ_DELAY_IN_NANOSECONDS = 10;
 
 
   private SerialPort serialPort;
@@ -160,7 +159,7 @@ public class DefaultUM7Client implements UM7Client {
             }
           }
         } else {
-          TimeUnit.MILLISECONDS.sleep(READ_DELAY_IN_NANOSECONDS);
+          TimeUnit.MILLISECONDS.sleep(UM7Constants.Defaults.READ_DELAY_IN_NANOSECONDS);
         }
       } catch (InterruptedException e) {
         LOG.warn("Program interrupted");

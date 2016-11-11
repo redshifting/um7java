@@ -30,7 +30,7 @@ public class EmulatorTest {
       head += String.format("%10s ", s);
     }
 
-    UM7Client um7cli = new DefaultUM7Client("um7", "COM1", 115200);
+    UM7Client um7cli = new DefaultUM7Client("um7", "COM1", 115200, 0.1f);
     UM7 um7 = new DefaultUM7(um7cli, new String[] {"roll", "pitch", "yaw"});
     System.out.println("GET_FW_REVISION="+ um7.getFirmwareVersion());
     boolean zg_ok = um7.zeroGyros();
