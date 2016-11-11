@@ -36,18 +36,15 @@ public class UM7DataSample {
     return (T)data.get(property);
   }
 
-  public Object getUntypedValue(final String property) {
+  /**
+   * Returns property value  without type cast
+   * @return property value or null
+   */
+
+  public Object getValue(final String property) {
     return data.get(property);
   }
 
-  /**
-   * Returns property value as String or null if no property exists
-   * @param property property name
-   * @return property value or null
-   */
-  public String getValue(final String property){
-    return String.valueOf(data.get(property));
-  }
 
   public boolean hasValue(final String property){
     return data.containsKey(property);

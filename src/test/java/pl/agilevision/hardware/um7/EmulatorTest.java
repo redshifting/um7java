@@ -55,7 +55,7 @@ public class EmulatorTest {
             if (v.equals("health")) {
               s += String.format("%10s", String.format("%8s", Integer.toBinaryString(um7.getState().getValue(v, Integer.TYPE))).replace(' ', '0'));
             } else {
-              Object o = um7.getState().getUntypedValue(v);
+              Object o = um7.getState().getValue(v);
               if (o instanceof Integer) {
                 s += String.format("%10s", String.format("%4d", (int) o));
               } else if (o instanceof Float) {
