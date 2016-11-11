@@ -175,10 +175,6 @@ public class DefaultUM7Client implements UM7Client {
     int timeouted = 1;
 
     if (packetFound == 0) {
-      hasdata = 0;
-      commandfailed = 0;
-      startaddress = 0;
-      data = null; //0
       timeouted = 1;
     } else {
       timeouted = 0;
