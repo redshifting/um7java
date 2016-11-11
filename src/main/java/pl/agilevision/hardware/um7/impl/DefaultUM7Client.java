@@ -26,6 +26,7 @@ public class DefaultUM7Client implements UM7Client {
   private static final int STOP_BITS = 1;
   private static final double NANOSECONDS_MULTIPLIER = 1.0e9;
   private static final long READ_DELAY_IN_NANOSECONDS = 10;
+  private static final float TIMEOUT_IN_SECONDS = 0.1f;
 
   private SerialPort serialPort;
   private String deviceName;
@@ -136,7 +137,7 @@ public class DefaultUM7Client implements UM7Client {
 
   @Override
   public UM7Packet readPacket() throws DeviceConnectionException {
-    return this.readPacket(0.1f);
+    return this.readPacket(TIMEOUT_IN_SECONDS);
   }
 
   /** Scans for and partially parses new data packets. Binary data can then be sent to data parser
@@ -330,7 +331,7 @@ public class DefaultUM7Client implements UM7Client {
     ba[3] = (byte) (cr & 0xFF);
 
     p = this.writeRegistry(UM7Constants.Registers.CREG_COM_SETTINGS,
-        (byte)1, ba, 0.1f, true);
+        (byte)1, ba, TIMEOUT_IN_SECONDS, true);
     if (p.commandfailed) {
       return false;
     }
