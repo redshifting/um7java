@@ -26,6 +26,10 @@ public class DefaultUM7Client implements UM7Client {
   private static final int STOP_BITS = 1;
   private static final double NANOSECONDS_MULTIPLIER = 1.0e9;
   private static final long READ_DELAY_IN_NANOSECONDS = 10;
+  private static final byte NEW_PACKET_PREFIX_1 = 's';
+  private static final byte NEW_PACKET_PREFIX_2 = 'n';
+  private static final byte NEW_PACKET_PREFIX_3 = 'p';
+
 
   private SerialPort serialPort;
   private String deviceName;
@@ -127,10 +131,10 @@ public class DefaultUM7Client implements UM7Client {
   }
 
   @Override
-  public int readByte() {
+  public byte readByte() {
     byte bytes[] = new byte[1];
     serialPort.readBytes(bytes, 1);
-    return bytes[0] & 0xFF;
+    return bytes[0];
   }
 
 
@@ -149,17 +153,13 @@ public class DefaultUM7Client implements UM7Client {
     while (System.nanoTime() - t0 < timeoutInNanoseconds) {
       try {
         if (serialPort.bytesAvailable() >= 3) {
-          int byte1 = this.readByte();
-          if (byte1 == 's') {
-            int byte2 = this.readByte();
-            if (byte2 == 'n') {
-              int byte3 = this.readByte();
-              if (byte3 == 'p') {
-                packetFound = 1;
-                break;
-              }
-            }
-          } 
+
+          if (readByte() == NEW_PACKET_PREFIX_1
+              && readByte() == NEW_PACKET_PREFIX_2
+              && readByte() == NEW_PACKET_PREFIX_3){
+            break;
+          }
+
         } else {
           TimeUnit.MILLISECONDS.sleep(READ_DELAY_IN_NANOSECONDS);
         }
