@@ -5,7 +5,7 @@ package pl.agilevision.hardware.um7;
  * @author Ivan Borschov (iborschov@agilevision.pl)
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
-public interface UM17Attributes {
+public interface UM7Attributes {
   String Health = "health";
   String Roll = "roll";
   String Pitch = "pitch";
