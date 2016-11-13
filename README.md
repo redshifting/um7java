@@ -41,7 +41,7 @@ In a case if it's not correct on the build host, tests can be skipped
 to still get a compiled JAR file:
 
 ```
-mvn clean package -Dmaven.skip.test=true
+mvn clean package -Dmaven.test.skip=true
 ```
 
 ### Test
@@ -105,23 +105,31 @@ import pl.agilevision.hardware.um7.UM7;
 import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.impl.DefaultUM7;
 import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
-try{
+
 // Create an instance of the DefaultUM7Client to establish the connection with the device:
-final UM7Client um7Client = new DefaultUM7Client("UM7", "COM3");
+UM7Client um7Client ;
 // Create an UM7 instance to perform high-level commands
-final UM7 um7 = new DefaultUM7(um7Client, new String[0]);
+UM7 um7;
 
-// Reset the device
-um7.zeroGyros();
+void setup() {
+    try{
+    // Create an instance of the DefaultUM7Client to establish the connection with the device:
+    final UM7Client um7Client = new DefaultUM7Client("UM7", "/dev/cu.usbserial-A6006B4K");
+    // Create an UM7 instance to perform high-level commands
+    final UM7 um7 = new DefaultUM7(um7Client, new String[0]);
 
-// Read current data
-final UM7DataSample sample = um7.readState();
-javax.swing.JOptionPane.showMessageDialog(null, "Firmware version: " + um7.getFirmwareVersion());
+    // Reset the device
+    um7.zeroGyros();
 
-// Disconnect from the device to free the port
-um7Client.disconnect();
+    // Read current data
+    final UM7DataSample sample = um7.readState();
+    javax.swing.JOptionPane.showMessageDialog(null, "Firmware version: " + um7.getFirmwareVersion());
 
-} catch (final Exception e){
-  System.out.println("Error");
+    // Disconnect from the device to free the port
+    um7Client.disconnect();
+
+    } catch (final Exception e){
+      System.out.println("Error");
+    }
 }
 ```
