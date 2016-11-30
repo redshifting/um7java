@@ -1,11 +1,9 @@
 package pl.agilevision.hardware.um7;
 
+import pl.agilevision.hardware.um7.data.BaseAttribute;
 import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
-
-import java.io.IOException;
-import java.util.Map;
 
 /**
  * Low-level UM7 client for IO operations with the UM7 device
@@ -84,6 +82,16 @@ public interface UM7Client {
   UM7Packet writeRegister(final int start, final int length, final byte[] data,
                           final float timeout, final boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException;
+
+  /**
+   * Set data rate of certain attribute
+   * @param attribute
+   * @param rate - if attribute is UM7Attributes.HealthRate, HealthRate can be one of UM7Attributes.Frequency.HealthRate.*
+   *             - if attribute is UM7Attributes.NMEA.* then can be one of Frequency.NMEA.*
+                 - for all other attribute rate is int from 0 to 255 that defines frequency in Hz
+   * @return
+   */
+  boolean setDataRate(BaseAttribute attribute, int rate);
 
 
   /**

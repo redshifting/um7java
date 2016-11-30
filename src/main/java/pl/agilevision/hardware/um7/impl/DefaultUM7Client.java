@@ -5,13 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.UM7Constants;
+import pl.agilevision.hardware.um7.data.BaseAttribute;
 import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -302,6 +301,58 @@ public class DefaultUM7Client implements UM7Client {
       }
     }
     return new UM7Packet(false, false, start, null, true, true);
+  }
+
+  @Override
+  public boolean setDataRate(BaseAttribute attribute, int rate) {
+    UM7Packet p;
+    // read current register value
+    try {
+      p = readRegister(attribute.getRegisterAddress());
+    } catch (OperationTimeoutException e) {
+      e.printStackTrace();
+      return false;
+    } catch (DeviceConnectionException e) {
+      e.printStackTrace();
+      return false;
+    }
+    final DataInputStream p_data = new DataInputStream(new ByteArrayInputStream(p.data));
+
+    long reg_val;
+    try {
+      reg_val = p_data.readInt(); //4 bytes
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+
+    // clear old val
+    long mask = ((1 << attribute.getWidth()) - 1);
+    reg_val &= ~( mask << attribute.getBitOffset() );
+
+    // assign new val
+    reg_val |= (rate & mask) << attribute.getBitOffset();
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    final DataOutputStream new_data = new DataOutputStream(baos);
+    try {
+      new_data.writeInt((int) reg_val);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    byte[] res = baos.toByteArray();
+    try {
+      writeRegister(attribute.getRegisterAddress(), res.length, res, defaultTimeoutInSeconds, true);
+    } catch (OperationTimeoutException e) {
+      e.printStackTrace();
+      return false;
+    } catch (DeviceConnectionException e) {
+      e.printStackTrace();
+      return false;
+    }
+
+    return true;
   }
 
 
