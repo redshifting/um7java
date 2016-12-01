@@ -343,7 +343,7 @@ public class DefaultUM7Client implements UM7Client {
     }
     byte[] res = baos.toByteArray();
     try {
-      writeRegister(attribute.getRegisterAddress(), res.length, res, defaultTimeoutInSeconds, true);
+      writeRegister(attribute.getRegisterAddress(), res.length / 4, res, defaultTimeoutInSeconds, true);
     } catch (OperationTimeoutException e) {
       e.printStackTrace();
       return false;

@@ -11,7 +11,7 @@ public class MagnetometerRaw extends GyroRaw {
   public static String Z = "mag_raw_z";
   public static String Time = "mag_raw_time";
 
-  public MagnetometerRaw(long registerAddress, int bitOffset) {
+  public MagnetometerRaw(int registerAddress, int bitOffset) {
     super(registerAddress, bitOffset);
   }
 }

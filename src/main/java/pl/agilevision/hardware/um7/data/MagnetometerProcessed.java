@@ -12,7 +12,7 @@ public class MagnetometerProcessed extends BaseAttribute {
   public static String Z = "mag_proc_z";
   public static String Time = "mag_proc_time";
 
-  public MagnetometerProcessed(long registerAddress, int bitOffset) {
+  public MagnetometerProcessed(int registerAddress, int bitOffset) {
     super(registerAddress, bitOffset);
   }
 }

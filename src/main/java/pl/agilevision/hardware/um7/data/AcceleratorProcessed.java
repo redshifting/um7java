@@ -11,7 +11,7 @@ public class AcceleratorProcessed extends BaseAttribute {
   public static String Z = "accel_proc_z";
   public static String Time = "accel_proc_time";
 
-  public AcceleratorProcessed(long registerAddress, int bitOffset) {
+  public AcceleratorProcessed(int registerAddress, int bitOffset) {
     super(registerAddress, bitOffset);
   }
 }

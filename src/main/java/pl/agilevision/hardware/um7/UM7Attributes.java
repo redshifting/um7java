@@ -43,7 +43,7 @@ public interface UM7Attributes {
   BaseAttribute Quat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 24);
   BaseAttribute Euler = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 16);
   BaseAttribute Position = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 8);
-  BaseAttribute Velocity = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 8);
+  BaseAttribute Velocity = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 0);
 
   BaseAttribute Pose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, 24);
 
@@ -58,7 +58,7 @@ public interface UM7Attributes {
     BaseAttribute Sensor = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 16, 4);
     BaseAttribute Rates = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 12, 4);
     BaseAttribute GpsPose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 8, 4);
-    BaseAttribute Auat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 4, 4);
+    BaseAttribute Quat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 4, 4);
   }
 
 
