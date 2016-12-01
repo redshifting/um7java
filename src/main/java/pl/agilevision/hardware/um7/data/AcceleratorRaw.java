@@ -12,7 +12,7 @@ public class AcceleratorRaw extends GyroRaw {
   public static String Z = "accel_raw_z";
   public static String Time = "accel_raw_time";
 
-  public AcceleratorRaw(int registerAddress, int bitOffset) {
-    super(registerAddress, bitOffset);
+  public AcceleratorRaw(int registerAddress, String name, int bitOffset) {
+    super(registerAddress, name, bitOffset);
   }
 }

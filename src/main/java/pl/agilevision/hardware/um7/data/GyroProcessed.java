@@ -11,8 +11,7 @@ public class GyroProcessed extends BaseAttribute {
   public static String Z = "gyro_proc_z";
   public static String Time = "gyro_proc_time";
 
-
-  public GyroProcessed(int registerAddress, int bitOffset) {
-    super(registerAddress, bitOffset);
+  public GyroProcessed(int registerAddress, String name, int bitOffset) {
+    super(registerAddress, name, bitOffset);
   }
 }

@@ -11,7 +11,7 @@ public class GyroRaw extends BaseAttribute {
   public static String Z = "gyro_raw_z";
   public static String Time = "gyro_raw_time";
 
-  public GyroRaw(int registerAddress, int bitOffset) {
-    super(registerAddress, bitOffset);
+  public GyroRaw(int registerAddress, String name, int bitOffset) {
+    super(registerAddress, name, bitOffset);
   }
 }

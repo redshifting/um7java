@@ -9,15 +9,17 @@ public class BaseAttribute {
   private int registerAddress;
   private int bitOffset;
   private int width;
+  private String name;
 
-  public BaseAttribute(int registerAddress, int bitOffset){
-    this(registerAddress, bitOffset, 8);
+  public BaseAttribute(int registerAddress, String name, int bitOffset){
+    this(registerAddress, name, bitOffset, 8);
   }
 
-  public BaseAttribute(int registerAddress, int bitOffset, int width){
+  public BaseAttribute(int registerAddress, String name, int bitOffset, int width){
     this.registerAddress = registerAddress;
     this.bitOffset = bitOffset;
     this.width = width;
+    this.name = name;
   }
 
   public int getRegisterAddress() {
@@ -31,4 +33,6 @@ public class BaseAttribute {
   public int getWidth() {
     return width;
   }
+
+  public String getName() { return name; }
 }

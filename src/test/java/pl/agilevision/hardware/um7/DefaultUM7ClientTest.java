@@ -1,5 +1,6 @@
 package pl.agilevision.hardware.um7;
 
+import pl.agilevision.hardware.um7.data.BaseAttribute;
 import org.junit.Test;
 import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
@@ -126,6 +127,51 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
         
         final UM7Packet dataPacket = client.readRegister(entry.getValue());
         final String message = String.format("Register [%-15s] contains value [%s]", entry.getKey(), encoder.encodeToString(dataPacket.data));
+        System.out.println(message);
+      }
+
+    } finally {
+      client.disconnect();
+    }
+  }
+  @Test
+  public void testSetDataRate() throws DeviceConnectionException {
+    info("Set DataRate check");
+    final UM7Client client = new DefaultUM7Client(TEST_DEVICE_NAME, TEST_PORT_NAME);
+
+    try{
+      // Given
+      final Map<BaseAttribute, Integer> attributes = new HashMap<>();
+      attributes.put(UM7Attributes.Accelerator.Raw, 1);
+      attributes.put(UM7Attributes.Magnetometer.Raw, 1);
+      attributes.put(UM7Attributes.AllRaw, 1);
+      attributes.put(UM7Attributes.TemperatureRate, 1);
+      attributes.put(UM7Attributes.Accelerator.Processed, 1);
+      attributes.put(UM7Attributes.Gyro.Processed, 1);
+      attributes.put(UM7Attributes.Magnetometer.Processed, 1);
+      attributes.put(UM7Attributes.AllProc, 1);
+      attributes.put(UM7Attributes.Quat, 1);
+      attributes.put(UM7Attributes.Euler, 1);
+      attributes.put(UM7Attributes.Position, 1);
+      attributes.put(UM7Attributes.Velocity, 1);
+      attributes.put(UM7Attributes.Pose, 1);
+      attributes.put(UM7Attributes.HealthRate, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
+      attributes.put(UM7Attributes.GyroBias, 1);
+      attributes.put(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+      attributes.put(UM7Attributes.NMEA.Pose, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+      attributes.put(UM7Attributes.NMEA.Attitude, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+      attributes.put(UM7Attributes.NMEA.Sensor, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+      attributes.put(UM7Attributes.NMEA.Rates, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+      attributes.put(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+      attributes.put(UM7Attributes.NMEA.Quat, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+
+      // Then
+      final Base64.Encoder encoder = Base64.getEncoder();
+
+      for(final Map.Entry<BaseAttribute, Integer> entry : attributes.entrySet()){
+        boolean ok = client.setDataRate(entry.getKey(), entry.getValue());
+
+        final String message = String.format("Set rate for [%s] is [%s]", entry.getKey().getName(),  ok);
         System.out.println(message);
       }
 

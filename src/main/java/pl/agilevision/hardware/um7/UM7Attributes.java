@@ -19,46 +19,46 @@ public interface UM7Attributes {
   String Temperature = "temp";
 
   interface Gyro {
-    GyroProcessed Processed = new GyroProcessed(UM7Constants.Registers.CREG_COM_RATES3, 16);
-    GyroRaw Raw = new GyroRaw(UM7Constants.Registers.CREG_COM_RATES1, 16);
+    GyroProcessed Processed = new GyroProcessed(UM7Constants.Registers.CREG_COM_RATES3, "PROC_GYRO_RATE", 16);
+    GyroRaw Raw = new GyroRaw(UM7Constants.Registers.CREG_COM_RATES1, "RAW_GYRO_RATE", 16);
   }
 
   interface Accelerator {
-    AcceleratorProcessed Processed = new AcceleratorProcessed(UM7Constants.Registers.CREG_COM_RATES3, 24);
-    AcceleratorRaw Raw = new AcceleratorRaw(UM7Constants.Registers.CREG_COM_RATES1, 24);
+    AcceleratorProcessed Processed = new AcceleratorProcessed(UM7Constants.Registers.CREG_COM_RATES3, "PROC_ACCEL_RATE", 24);
+    AcceleratorRaw Raw = new AcceleratorRaw(UM7Constants.Registers.CREG_COM_RATES1, "RAW_ACCEL_RATE", 24);
   }
 
   interface Magnetometer {
-    MagnetometerProcessed Processed = new MagnetometerProcessed(UM7Constants.Registers.CREG_COM_RATES3, 8);
-    MagnetometerRaw Raw = new MagnetometerRaw(UM7Constants.Registers.CREG_COM_RATES1, 8);
+    MagnetometerProcessed Processed = new MagnetometerProcessed(UM7Constants.Registers.CREG_COM_RATES3, "PROC_MAG_RATE", 8);
+    MagnetometerRaw Raw = new MagnetometerRaw(UM7Constants.Registers.CREG_COM_RATES1, "RAW_MAG_RATE", 8);
   }
 
-  BaseAttribute AllRaw = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES2, 0);
+  BaseAttribute AllRaw = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES2, "ALL_RAW_RATE", 0);
 
   //todo mb need to merge with Temperature String constant above
-  BaseAttribute TemperatureRate = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES2, 24);
+  BaseAttribute TemperatureRate = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES2, "TEMP_RATE", 24);
 
-  BaseAttribute AllProc = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES4, 0);
+  BaseAttribute AllProc = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES4, "ALL_PROC_RATE", 0);
 
-  BaseAttribute Quat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 24);
-  BaseAttribute Euler = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 16);
-  BaseAttribute Position = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 8);
-  BaseAttribute Velocity = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, 0);
+  BaseAttribute Quat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, "QUAT_RATE", 24);
+  BaseAttribute Euler = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, "EULER_RATE", 16);
+  BaseAttribute Position = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, "POSITION_RATE", 8);
+  BaseAttribute Velocity = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, "VELOCITY_RATE", 0);
 
-  BaseAttribute Pose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, 24);
+  BaseAttribute Pose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, "POSE_RATE", 24);
 
   // todo mb need to merge with Health String constant above
-  BaseAttribute HealthRate = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, 16, 4);
-  BaseAttribute GyroBias = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, 8);
+  BaseAttribute HealthRate = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, "HEALTH_RATE", 16, 4);
+  BaseAttribute GyroBias = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, "GYRO_BIAS_RATE", 8);
 
   interface NMEA {
-    BaseAttribute Health = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 28, 4);
-    BaseAttribute Pose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 24, 4);
-    BaseAttribute Attitude = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 20, 4);
-    BaseAttribute Sensor = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 16, 4);
-    BaseAttribute Rates = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 12, 4);
-    BaseAttribute GpsPose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 8, 4);
-    BaseAttribute Quat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, 4, 4);
+    BaseAttribute Health = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA HEALTH_RATE", 28,  4);
+    BaseAttribute Pose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA POSE_RATE", 24, 4);
+    BaseAttribute Attitude = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA ATTITUDE_RATE", 20, 4);
+    BaseAttribute Sensor = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA SENSOR_RATE", 16, 4);
+    BaseAttribute Rates = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA RATES_RATE", 12, 4);
+    BaseAttribute GpsPose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA GPS_POSE_RATE", 8, 4);
+    BaseAttribute Quat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA QUAT_RATE", 4, 4);
   }
 
 
