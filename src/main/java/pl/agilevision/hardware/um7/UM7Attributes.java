@@ -1,6 +1,12 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.*;
+import pl.agilevision.hardware.um7.data.attributes.AcceleratorProcessed;
+import pl.agilevision.hardware.um7.data.attributes.AcceleratorRaw;
+import pl.agilevision.hardware.um7.data.attributes.BaseAttribute;
+import pl.agilevision.hardware.um7.data.attributes.GyroProcessed;
+import pl.agilevision.hardware.um7.data.attributes.GyroRaw;
+import pl.agilevision.hardware.um7.data.attributes.MagnetometerProcessed;
+import pl.agilevision.hardware.um7.data.attributes.MagnetometerRaw;
 
 /**
  * Describes available UM7 properties

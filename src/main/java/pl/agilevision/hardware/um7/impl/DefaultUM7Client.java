@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.UM7Constants;
-import pl.agilevision.hardware.um7.data.BaseAttribute;
-import pl.agilevision.hardware.um7.data.UM7Packet;
+import pl.agilevision.hardware.um7.data.attributes.BaseAttribute;
+import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
@@ -133,13 +133,13 @@ public class DefaultUM7Client implements UM7Client {
 
 
   @Override
-  public UM7Packet readPacket() throws DeviceConnectionException {
+  public UM7BinaryPacket readPacket() throws DeviceConnectionException {
     return this.readPacket(defaultTimeoutInSeconds);
   }
 
   /** Scans for and partially parses new data packets. Binary data can then be sent to data parser
    :return: Parsed packet info */
-  public UM7Packet readPacket(float timeout) throws DeviceConnectionException {
+  public UM7BinaryPacket readPacket(float timeout) throws DeviceConnectionException {
     final long timeoutInNanoseconds = (long) (timeout * NANOSECONDS_MULTIPLIER);
     int packetFound = 0;
     boolean isNmeaPaket = false;
@@ -252,12 +252,12 @@ public class DefaultUM7Client implements UM7Client {
 
       }
     }
-    return new UM7Packet(packetFound == 1, hasdata == 1, startaddress, data, commandfailed == 1, timeouted == 1);
+    return new UM7BinaryPacket(packetFound == 1, hasdata == 1, startaddress, data, commandfailed == 1, timeouted == 1);
   }
 
 
   @Override
-  public UM7Packet readRegister(final int start, final int length, final float timeout)
+  public UM7BinaryPacket readRegister(final int start, final int length, final float timeout)
       throws OperationTimeoutException, DeviceConnectionException {
     long ns_timeout = (long) (timeout * 1.0e9);
 
@@ -277,17 +277,17 @@ public class DefaultUM7Client implements UM7Client {
 
     long t0 = System.nanoTime();
     while (System.nanoTime() - t0 < ns_timeout) { // While elapsed time is less than timeout
-      UM7Packet packet = readPacket();
+      UM7BinaryPacket packet = readPacket();
       if (packet.startaddress == start) {
         return packet;
       }
     }
-    return new UM7Packet(false, false, start, null, true, true);
+    return new UM7BinaryPacket(false, false, start, null, true, true);
   }
 
   @Override
-  public UM7Packet writeRegister(final int start, final int length, final byte[] data,
-                                 final float timeout, boolean noRead)
+  public UM7BinaryPacket writeRegister(final int start, final int length, final byte[] data,
+                                       final float timeout, boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException {
     long ns_timeout = (long) (timeout * 1.0e9);
     short hidden = (short)(start & UM7Constants.Registers.REG_HIDDEN);
@@ -305,23 +305,23 @@ public class DefaultUM7Client implements UM7Client {
     if (noRead) {
       // todo seems we cant flush in jSerialCom
       //serial.getInputStream().flush()
-      return new UM7Packet(false, false, start, null, true, false);
+      return new UM7BinaryPacket(false, false, start, null, true, false);
     }
 
     long t0 = System.nanoTime();
     while (System.nanoTime() - t0 < ns_timeout) { // While elapsed time is less than timeout
-      UM7Packet packet = this.readPacket();
+      UM7BinaryPacket packet = this.readPacket();
       if (packet.startaddress == start) {
         LOG.debug("Found packet with address {}", start);
         return packet;
       }
     }
-    return new UM7Packet(false, false, start, null, true, true);
+    return new UM7BinaryPacket(false, false, start, null, true, true);
   }
 
   @Override
   public boolean setDataRate(BaseAttribute attribute, int rate) {
-    UM7Packet p;
+    UM7BinaryPacket p;
     // read current register value
     try {
       p = readRegister(attribute.getRegisterAddress());
@@ -375,7 +375,7 @@ public class DefaultUM7Client implements UM7Client {
   @Override
   public boolean setBaudRate(int baudRate) throws DeviceConnectionException, OperationTimeoutException {
     int new_baud = baudRates.get(baudRate) << 28;
-    UM7Packet p = this.readRegister(UM7Constants.Registers.CREG_COM_SETTINGS);
+    UM7BinaryPacket p = this.readRegister(UM7Constants.Registers.CREG_COM_SETTINGS);
     if (p.commandfailed){
       return false;
     }
@@ -407,18 +407,18 @@ public class DefaultUM7Client implements UM7Client {
 
 
   @Override
-  public UM7Packet readRegister(final int start)
+  public UM7BinaryPacket readRegister(final int start)
       throws OperationTimeoutException, DeviceConnectionException {
     return this.readRegister(start, (byte) 0);
   }
 
   @Override
-  public UM7Packet clearRegister(final int start)
+  public UM7BinaryPacket clearRegister(final int start)
     throws OperationTimeoutException, DeviceConnectionException {
     return writeRegister(start, (byte)1, null, defaultTimeoutInSeconds, false);
   }
 
-  private UM7Packet readRegister(final int start, final int length)
+  private UM7BinaryPacket readRegister(final int start, final int length)
       throws OperationTimeoutException, DeviceConnectionException {
     return readRegister(start, length, defaultTimeoutInSeconds);
   }

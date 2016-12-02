@@ -1,7 +1,7 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.BaseAttribute;
-import pl.agilevision.hardware.um7.data.UM7Packet;
+import pl.agilevision.hardware.um7.data.attributes.BaseAttribute;
+import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
@@ -35,7 +35,7 @@ public interface UM7Client {
    * @return packet
    * @throws DeviceConnectionException if a connection error happened while waiting for a packet
    */
-  UM7Packet readPacket() throws DeviceConnectionException;
+  UM7BinaryPacket readPacket() throws DeviceConnectionException;
 
   /**
    * Reads the device registry
@@ -45,7 +45,7 @@ public interface UM7Client {
    * @return registry value
    * @throws OperationTimeoutException if the operation didn't finish in the given timeout
    */
-  UM7Packet readRegister(final int start, final int length, final float timeout)
+  UM7BinaryPacket readRegister(final int start, final int length, final float timeout)
       throws OperationTimeoutException, DeviceConnectionException;
 
   /**
@@ -55,7 +55,7 @@ public interface UM7Client {
    * @throws OperationTimeoutException if timeout happened
    * @throws DeviceConnectionException if there was an issue with the connection
    */
-  UM7Packet readRegister(int start)
+  UM7BinaryPacket readRegister(int start)
       throws OperationTimeoutException, DeviceConnectionException;
 
   /**
@@ -65,7 +65,7 @@ public interface UM7Client {
    * @throws OperationTimeoutException if timeout happened
    * @throws DeviceConnectionException if there was an issue with the connection
    */
-  UM7Packet clearRegister(int start)
+  UM7BinaryPacket clearRegister(int start)
       throws OperationTimeoutException, DeviceConnectionException;
 
   /**
@@ -79,8 +79,8 @@ public interface UM7Client {
    * @throws OperationTimeoutException if timeout happened
    * @throws DeviceConnectionException if there was an issue with the connection
    */
-  UM7Packet writeRegister(final int start, final int length, final byte[] data,
-                          final float timeout, final boolean noRead)
+  UM7BinaryPacket writeRegister(final int start, final int length, final byte[] data,
+                                final float timeout, final boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException;
 
   /**

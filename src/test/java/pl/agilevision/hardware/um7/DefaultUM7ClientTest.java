@@ -1,8 +1,8 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.BaseAttribute;
+import pl.agilevision.hardware.um7.data.attributes.BaseAttribute;
 import org.junit.Test;
-import pl.agilevision.hardware.um7.data.UM7Packet;
+import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
@@ -125,7 +125,7 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
 
       for(final Map.Entry<String, Integer> entry : registers.entrySet()){
         
-        final UM7Packet dataPacket = client.readRegister(entry.getValue());
+        final UM7BinaryPacket dataPacket = client.readRegister(entry.getValue());
         final String message = String.format("Register [%-15s] contains value [%s]", entry.getKey(), encoder.encodeToString(dataPacket.data));
         System.out.println(message);
       }
