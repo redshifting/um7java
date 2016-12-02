@@ -142,6 +142,7 @@ public class DefaultUM7Client implements UM7Client {
   public UM7Packet readPacket(float timeout) throws DeviceConnectionException {
     final long timeoutInNanoseconds = (long) (timeout * NANOSECONDS_MULTIPLIER);
     int packetFound = 0;
+    boolean isNmeaPaket = false;
     long t0 = System.nanoTime();
 
     while (System.nanoTime() - t0 < timeoutInNanoseconds) {
@@ -154,6 +155,16 @@ public class DefaultUM7Client implements UM7Client {
               int byte3 = this.readByte();
               if (byte3 == 'p') {
                 packetFound = 1;
+                break;
+              }
+            }
+          } else if (byte1 == '$') {
+            int byte2 = this.readByte();
+            if (byte2 == 'P') {
+              int byte3 = this.readByte();
+              if (byte3 == 'C') {
+                packetFound = 1;
+                isNmeaPaket = true;
                 break;
               }
             }
@@ -175,65 +186,70 @@ public class DefaultUM7Client implements UM7Client {
     if (packetFound == 0) {
       timeouted = 1;
     } else {
-      timeouted = 0;
+      if (!isNmeaPaket) {
+        timeouted = 0;
 
-      int pt = this.readByte() & 0xFF;
-      hasdata = pt & 0b10000000;
-      int isbatch = (pt & 0b01000000);
-      int numdatabytes = ((pt & 0b00111100) >> 2) * 4;
+        int pt = this.readByte() & 0xFF;
+        hasdata = pt & 0b10000000;
+        int isbatch = (pt & 0b01000000);
+        int numdatabytes = ((pt & 0b00111100) >> 2) * 4;
 
-      commandfailed = pt & 0b00000001;
-      int hidden = (byte)(pt & 0b00000010);
-      if (isbatch == 0 ) {
-        numdatabytes = 4;
-      }
-
-      startaddress = this.readByte() ;
-      LOG.debug(String.format("Pack read, pt: %s, sa: %X bytes %d",
-        String.format("%8s", Integer.toBinaryString(pt)).replace(' ', '0'), startaddress, numdatabytes));
-
-      while (serialPort.bytesAvailable() < numdatabytes) {
-        ;
-      }
-
-      if (hasdata != 0 ) {
-        data = new byte[numdatabytes];
-        serialPort.readBytes(data, numdatabytes);
-      } else {
-        data = null; // False
-      }
-
-      byte[] cs_bytes = new byte[2];
-      serialPort.readBytes(cs_bytes, 2);
-      final DataInputStream is = new DataInputStream(new ByteArrayInputStream(cs_bytes));
-      int cs = 0;
-      try {
-        cs = is.readShort();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-      int ocs = 0;
-      ocs += (int)'s';
-      ocs += (int)'n';
-      ocs += (int)'p';
-      ocs += pt;
-      ocs += startaddress;
-      if (data != null) {
-        for (byte b:data) {
-          ocs += b & 0xFF;
+        commandfailed = pt & 0b00000001;
+        int hidden = (byte) (pt & 0b00000010);
+        if (isbatch == 0) {
+          numdatabytes = 4;
         }
-      }
 
-      if (hidden != 0) {
-        startaddress |= UM7Constants.Registers.REG_HIDDEN;
-      }
-      if (ocs != cs) {
-        LOG.error(String.format("bad checksum: %d (should be: %d)", cs, ocs));
-        hasdata = 0;   // was for all ValueError
-        commandfailed = 0;
-        startaddress = 0;
-        data = null;
+        startaddress = this.readByte();
+        LOG.debug(String.format("Pack read, pt: %s, sa: %X bytes %d",
+          String.format("%8s", Integer.toBinaryString(pt)).replace(' ', '0'), startaddress, numdatabytes));
+
+        while (serialPort.bytesAvailable() < numdatabytes) {
+          ;
+        }
+
+        if (hasdata != 0) {
+          data = new byte[numdatabytes];
+          serialPort.readBytes(data, numdatabytes);
+        } else {
+          data = null; // False
+        }
+
+        byte[] cs_bytes = new byte[2];
+        serialPort.readBytes(cs_bytes, 2);
+        final DataInputStream is = new DataInputStream(new ByteArrayInputStream(cs_bytes));
+        int cs = 0;
+        try {
+          cs = is.readShort();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+        int ocs = 0;
+        ocs += (int) 's';
+        ocs += (int) 'n';
+        ocs += (int) 'p';
+        ocs += pt;
+        ocs += startaddress;
+        if (data != null) {
+          for (byte b : data) {
+            ocs += b & 0xFF;
+          }
+        }
+
+        if (hidden != 0) {
+          startaddress |= UM7Constants.Registers.REG_HIDDEN;
+        }
+        if (ocs != cs) {
+          LOG.error(String.format("bad checksum: %d (should be: %d)", cs, ocs));
+          hasdata = 0;   // was for all ValueError
+          commandfailed = 0;
+          startaddress = 0;
+          data = null;
+        }
+      } else {
+        // is NMEA packet
+
       }
     }
     return new UM7Packet(packetFound == 1, hasdata == 1, startaddress, data, commandfailed == 1, timeouted == 1);
