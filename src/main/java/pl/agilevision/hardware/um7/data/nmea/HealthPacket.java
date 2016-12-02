@@ -7,7 +7,6 @@ public class HealthPacket extends UM7NMEAPacket {
   public static final String HEADER = "$PCHRH";
   private final String STR_TRUE = "1";
 
-  private String time;
   private int satsUsed;
   private int satsInView;
   private float hdop;
@@ -18,15 +17,6 @@ public class HealthPacket extends UM7NMEAPacket {
   private boolean gpsOffline;
   private String mode;
 
-  
-
-  public String getTime() {
-    return time;
-  }
-
-  public void setTime(String time) {
-    this.time = time;
-  }
 
   public int getSatsUsed() {
     return satsUsed;

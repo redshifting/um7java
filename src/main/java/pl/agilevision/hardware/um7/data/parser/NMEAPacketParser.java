@@ -54,17 +54,17 @@ public class NMEAPacketParser implements PacketParser {
 
     PACKET_COLUMNS_MAPPING = new HashMap<>();
     PACKET_COLUMNS_MAPPING.put(AttitudePacket.HEADER,
-        null);
+        new String[]{"time", "roll", "pitch", "yaw", "heading"});
     PACKET_COLUMNS_MAPPING.put(GpsPosePacket.HEADER,
-        new String[]{});
+        new String[]{"time", "latitude", "longitude", "altitude", "roll", "pitch", "yaw", "heading"});
     PACKET_COLUMNS_MAPPING.put(HealthPacket.HEADER,
         new String[]{"time", "satsUsed", "satsInView", "hdop", "mode", "comFault", "acceleratorRateFault", "gyroRateFault", "magnetometerRateFault", "gpsOffline", null, null, null});
     PACKET_COLUMNS_MAPPING.put(PosePacket.HEADER,
         new String[]{"time", "homeNorth", "homeEast", "homeAltitude", "roll", "pitch", "yaw", "heading"});
     PACKET_COLUMNS_MAPPING.put(QuaternionPacket.HEADER,
-        new String[]{});
+        new String[]{"time", "a", "b", "c", "d"});
     PACKET_COLUMNS_MAPPING.put(RatePacket.HEADER,
-        new String[]{});
+        new String[]{"time", "velocityNorth", "velocityEast", "velocityUpward", "rollRate", "pitchRate", "yawRate"});
     PACKET_COLUMNS_MAPPING.put(SensorPacket.HEADER,
         new String[]{"sensorType", "time", "x", "y", "z"});
 
