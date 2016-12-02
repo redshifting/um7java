@@ -6,23 +6,13 @@ import pl.agilevision.hardware.um7.data.UM7Packet;
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
 public abstract class UM7NMEAPacket extends UM7Packet{
-  private String header;
-  private String checksum;
+  private float time;
 
-
-  public String getHeader() {
-    return header;
+  public float getTime() {
+    return time;
   }
 
-  public void setHeader(String header) {
-    this.header = header;
-  }
-
-  public String getChecksum() {
-    return checksum;
-  }
-
-  public void setChecksum(String checksum) {
-    this.checksum = checksum;
+  public void setTime(String value) {
+    this.time = Float.parseFloat(value);
   }
 }
