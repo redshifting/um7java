@@ -5,7 +5,7 @@ package pl.agilevision.hardware.um7.data.attributes;
  * @author Ivan Borschov (iborschov@agilevision.pl)
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
-public class GyroRaw extends BaseAttribute {
+public class GyroRaw extends ConfigurableRateAttribute {
   public static String X = "gyro_raw_x";
   public static String Y = "gyro_raw_y";
   public static String Z = "gyro_raw_z";

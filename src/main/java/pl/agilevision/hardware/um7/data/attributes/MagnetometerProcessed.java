@@ -5,7 +5,7 @@ package pl.agilevision.hardware.um7.data.attributes;
  * @author Ivan Borschov (iborschov@agilevision.pl)
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
-public class MagnetometerProcessed extends BaseAttribute {
+public class MagnetometerProcessed extends ConfigurableRateAttribute {
 
   public static String X = "mag_proc_x";
   public static String Y = "mag_proc_y";

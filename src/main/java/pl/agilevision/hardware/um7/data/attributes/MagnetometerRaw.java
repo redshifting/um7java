@@ -5,7 +5,7 @@ package pl.agilevision.hardware.um7.data.attributes;
  * @author Ivan Borschov (iborschov@agilevision.pl)
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
-public class MagnetometerRaw extends BaseAttribute {
+public class MagnetometerRaw extends ConfigurableRateAttribute {
   public static String X = "mag_raw_x";
   public static String Y = "mag_raw_y";
   public static String Z = "mag_raw_z";

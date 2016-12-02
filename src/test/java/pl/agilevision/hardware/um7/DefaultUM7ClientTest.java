@@ -1,6 +1,6 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.attributes.BaseAttribute;
+import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import org.junit.Test;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
@@ -141,21 +141,21 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
 
     try{
       // Given
-      final Map<BaseAttribute, Integer> attributes = new HashMap<>();
+      final Map<ConfigurableRateAttribute, Integer> attributes = new HashMap<>();
       attributes.put(UM7Attributes.Accelerator.Raw, 1);
       attributes.put(UM7Attributes.Magnetometer.Raw, 1);
-      attributes.put(UM7Attributes.AllRaw, 1);
-      attributes.put(UM7Attributes.TemperatureRate, 1);
+
+      attributes.put(UM7Attributes.Temperature, 1);
       attributes.put(UM7Attributes.Accelerator.Processed, 1);
       attributes.put(UM7Attributes.Gyro.Processed, 1);
       attributes.put(UM7Attributes.Magnetometer.Processed, 1);
-      attributes.put(UM7Attributes.AllProc, 1);
+
       attributes.put(UM7Attributes.Quat, 1);
       attributes.put(UM7Attributes.Euler, 1);
       attributes.put(UM7Attributes.Position, 1);
       attributes.put(UM7Attributes.Velocity, 1);
-      attributes.put(UM7Attributes.Pose, 1);
-      attributes.put(UM7Attributes.HealthRate, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
+
+      attributes.put(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
       attributes.put(UM7Attributes.GyroBias, 1);
       attributes.put(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
       attributes.put(UM7Attributes.NMEA.Pose, UM7Attributes.Frequency.NMEA.Freq1_HZ);
@@ -165,13 +165,17 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
       attributes.put(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.Freq1_HZ);
       attributes.put(UM7Attributes.NMEA.Quat, UM7Attributes.Frequency.NMEA.Freq1_HZ);
 
+      attributes.put(UM7Attributes.AllRaw, 0);
+      attributes.put(UM7Attributes.AllProc, 0);
+      attributes.put(UM7Attributes.Pose, 0);
+
       // Then
       final Base64.Encoder encoder = Base64.getEncoder();
 
-      for(final Map.Entry<BaseAttribute, Integer> entry : attributes.entrySet()){
+      for(final Map.Entry<ConfigurableRateAttribute, Integer> entry : attributes.entrySet()){
         boolean ok = client.setDataRate(entry.getKey(), entry.getValue());
 
-        final String message = String.format("Set rate for [%s] is [%s]", entry.getKey().getName(),  ok);
+        final String message = String.format("Set rate for [%s] is [%s]", entry.getKey().getRateConfName(),  ok);
         System.out.println(message);
       }
 

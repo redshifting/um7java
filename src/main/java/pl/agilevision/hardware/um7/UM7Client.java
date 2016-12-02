@@ -1,6 +1,6 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.attributes.BaseAttribute;
+import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
@@ -86,12 +86,14 @@ public interface UM7Client {
   /**
    * Set data rate of certain attribute
    * @param attribute
-   * @param rate - if attribute is UM7Attributes.HealthRate, HealthRate can be one of UM7Attributes.Frequency.HealthRate.*
-   *             - if attribute is UM7Attributes.NMEA.* then can be one of Frequency.NMEA.*
-                 - for all other attribute rate is int from 0 to 255 that defines frequency in Hz
+   * @param rate - if attribute is UM7Attributes.Health.Value, can be one of UM7Attributes.Frequency.HealthRate.*
+   *             - if attribute is UM7Attributes.NMEA.* then can be one of UM7Attributes.Frequency.NMEA.*
+   *             - if attribute is UM7Attributes.Gps or UM7Attributes.GpsSateliteDetails then can be one of
+   *             UM7Attributes.Frequency.Gps (only 2 values)
+   *              - for all other attribute rate is int from 0 to 255 that defines frequency in Hz
    * @return
    */
-  boolean setDataRate(BaseAttribute attribute, int rate);
+  boolean setDataRate(ConfigurableRateAttribute attribute, int rate);
 
 
   /**

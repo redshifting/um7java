@@ -1,12 +1,10 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.attributes.AcceleratorProcessed;
-import pl.agilevision.hardware.um7.data.attributes.AcceleratorRaw;
-import pl.agilevision.hardware.um7.data.attributes.BaseAttribute;
-import pl.agilevision.hardware.um7.data.attributes.GyroProcessed;
-import pl.agilevision.hardware.um7.data.attributes.GyroRaw;
-import pl.agilevision.hardware.um7.data.attributes.MagnetometerProcessed;
-import pl.agilevision.hardware.um7.data.attributes.MagnetometerRaw;
+import pl.agilevision.hardware.um7.data.attributes.*;
+import pl.agilevision.hardware.um7.data.attributes.Temperature;
+import pl.agilevision.hardware.um7.data.attributes.Quat;
+import pl.agilevision.hardware.um7.data.attributes.Euler;
+import pl.agilevision.hardware.um7.data.attributes.Health;
 
 /**
  * Describes available UM7 properties
@@ -14,16 +12,8 @@ import pl.agilevision.hardware.um7.data.attributes.MagnetometerRaw;
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
 public interface UM7Attributes {
-  String Health = "health";
-  String Roll = "roll";
-  String Pitch = "pitch";
-  String Yaw = "yaw";
-  String RollRate = "roll_rate";
-  String PitchRate = "pitch_rate";
-  String YawRate = "yaw_rate";
-  String EulerTime = "euler_time";
-  String Temperature = "temp";
 
+  //Attributes with configurable rates
   interface Gyro {
     GyroProcessed Processed = new GyroProcessed(UM7Constants.Registers.CREG_COM_RATES3, "PROC_GYRO_RATE", 16);
     GyroRaw Raw = new GyroRaw(UM7Constants.Registers.CREG_COM_RATES1, "RAW_GYRO_RATE", 16);
@@ -39,37 +29,54 @@ public interface UM7Attributes {
     MagnetometerRaw Raw = new MagnetometerRaw(UM7Constants.Registers.CREG_COM_RATES1, "RAW_MAG_RATE", 8);
   }
 
-  BaseAttribute AllRaw = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES2, "ALL_RAW_RATE", 0);
-
-  //todo mb need to merge with Temperature String constant above
-  BaseAttribute TemperatureRate = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES2, "TEMP_RATE", 24);
-
-  BaseAttribute AllProc = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES4, "ALL_PROC_RATE", 0);
-
-  BaseAttribute Quat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, "QUAT_RATE", 24);
-  BaseAttribute Euler = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, "EULER_RATE", 16);
-  BaseAttribute Position = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, "POSITION_RATE", 8);
-  BaseAttribute Velocity = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES5, "VELOCITY_RATE", 0);
-
-  BaseAttribute Pose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, "POSE_RATE", 24);
-
-  // todo mb need to merge with Health String constant above
-  BaseAttribute HealthRate = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, "HEALTH_RATE", 16, 4);
-  BaseAttribute GyroBias = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES6, "GYRO_BIAS_RATE", 8);
+  Temperature Temperature = new Temperature(UM7Constants.Registers.CREG_COM_RATES2, "TEMP_RATE", 24);
+  Quat Quat = new Quat(UM7Constants.Registers.CREG_COM_RATES5, "QUAT_RATE", 24);
+  Euler Euler = new Euler(UM7Constants.Registers.CREG_COM_RATES5, "EULER_RATE", 16);
+  Position Position = new Position(UM7Constants.Registers.CREG_COM_RATES5, "POSITION_RATE", 8);
+  Velocity Velocity = new Velocity(UM7Constants.Registers.CREG_COM_RATES5, "VELOCITY_RATE", 0);
+  Health Health = new Health(UM7Constants.Registers.CREG_COM_RATES6, "HEALTH_RATE", 16, 4);
+  GyroBias GyroBias = new GyroBias(UM7Constants.Registers.CREG_COM_RATES6, "GYRO_BIAS_RATE", 8);
 
   interface NMEA {
-    BaseAttribute Health = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA HEALTH_RATE", 28,  4);
-    BaseAttribute Pose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA POSE_RATE", 24, 4);
-    BaseAttribute Attitude = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA ATTITUDE_RATE", 20, 4);
-    BaseAttribute Sensor = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA SENSOR_RATE", 16, 4);
-    BaseAttribute Rates = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA RATES_RATE", 12, 4);
-    BaseAttribute GpsPose = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA GPS_POSE_RATE", 8, 4);
-    BaseAttribute Quat = new BaseAttribute(UM7Constants.Registers.CREG_COM_RATES7, "NMEA QUAT_RATE", 4, 4);
+    ConfigurableRateAttribute Health = new ConfigurableRateAttribute(
+      UM7Constants.Registers.CREG_COM_RATES7, "NMEA HEALTH_RATE", 28,  4);
+    ConfigurableRateAttribute Pose = new ConfigurableRateAttribute(
+      UM7Constants.Registers.CREG_COM_RATES7, "NMEA POSE_RATE", 24, 4);
+    ConfigurableRateAttribute Attitude = new ConfigurableRateAttribute(
+      UM7Constants.Registers.CREG_COM_RATES7, "NMEA ATTITUDE_RATE", 20, 4);
+    ConfigurableRateAttribute Sensor = new ConfigurableRateAttribute(
+      UM7Constants.Registers.CREG_COM_RATES7, "NMEA SENSOR_RATE", 16, 4);
+    ConfigurableRateAttribute Rates = new ConfigurableRateAttribute(
+      UM7Constants.Registers.CREG_COM_RATES7, "NMEA RATES_RATE", 12, 4);
+    ConfigurableRateAttribute GpsPose = new ConfigurableRateAttribute(
+      UM7Constants.Registers.CREG_COM_RATES7, "NMEA GPS_POSE_RATE", 8, 4);
+    ConfigurableRateAttribute Quat = new ConfigurableRateAttribute(
+      UM7Constants.Registers.CREG_COM_RATES7, "NMEA QUAT_RATE", 4, 4);
   }
 
+  // Rates that re-defines batch groups
+  ConfigurableRateAttribute AllRaw = new ConfigurableRateAttribute(
+    UM7Constants.Registers.CREG_COM_RATES2, "ALL_RAW_RATE", 0, 1);
+  ConfigurableRateAttribute AllProc = new ConfigurableRateAttribute(
+    UM7Constants.Registers.CREG_COM_RATES4, "ALL_PROC_RATE", 0, 1);
+  ConfigurableRateAttribute Pose = new ConfigurableRateAttribute(
+    UM7Constants.Registers.CREG_COM_RATES6, "POSE_RATE", 24, 0);
 
+  // attributes with only ON/OFF rates
+  Gps Gps = new Gps(
+    UM7Constants.Registers.CREG_COM_SETTINGS, "GPS", 8, 1, 0);
+
+  GpsSateliteDetails GpsSateliteDetails = new GpsSateliteDetails(
+    UM7Constants.Registers.CREG_COM_SETTINGS, "SAT", 4, 1, 0);
+
+  // Attributes with non-configurable Rates todo, mb not needed here
+  //GyroTrim GyroTrim = new GyroTrim();
 
   interface Frequency {
+    interface Gps {
+      int Off = 0; // Off
+      int On = 1; // On
+    }
     interface HealthRate {
       int FreqOFF = 0; // Off
       int Freq0_125_HZ = 1; // 0.125 Hz

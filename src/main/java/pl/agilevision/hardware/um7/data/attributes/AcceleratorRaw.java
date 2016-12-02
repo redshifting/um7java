@@ -6,7 +6,7 @@ package pl.agilevision.hardware.um7.data.attributes;
  * @author Ivan Borschov (iborschov@agilevision.pl)
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
-public class AcceleratorRaw extends BaseAttribute {
+public class AcceleratorRaw extends ConfigurableRateAttribute {
   public static String X = "accel_raw_x";
   public static String Y = "accel_raw_y";
   public static String Z = "accel_raw_z";

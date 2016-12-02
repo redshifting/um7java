@@ -48,7 +48,7 @@ public class EmulatorTest {
     setR_ok = um7cli.setDataRate(UM7Attributes.AllRaw, 0xFF);
     System.out.println("Set All Raw Rate " + (setR_ok ? "ok":"failed."));
 
-    setR_ok = um7cli.setDataRate(UM7Attributes.TemperatureRate, 0xAA);
+    setR_ok = um7cli.setDataRate(UM7Attributes.Temperature, 0xAA);
     System.out.println("Set Temp Rate Rate " + (setR_ok ? "ok":"failed."));
 
     setR_ok = um7cli.setDataRate(UM7Attributes.Accelerator.Processed, 0xAA);
@@ -78,7 +78,7 @@ public class EmulatorTest {
     setR_ok = um7cli.setDataRate(UM7Attributes.Pose, 0xAA);
     System.out.println("Set Pose Rate " + (setR_ok ? "ok":"failed."));
 
-    setR_ok = um7cli.setDataRate(UM7Attributes.HealthRate, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
+    setR_ok = um7cli.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
     System.out.println("Set Health Rate " + (setR_ok ? "ok":"failed."));
 
     setR_ok = um7cli.setDataRate(UM7Attributes.GyroBias, 0xAA);

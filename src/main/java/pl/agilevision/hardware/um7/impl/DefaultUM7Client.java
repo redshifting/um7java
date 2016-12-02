@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.UM7Constants;
-import pl.agilevision.hardware.um7.data.attributes.BaseAttribute;
+import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
@@ -320,11 +320,13 @@ public class DefaultUM7Client implements UM7Client {
   }
 
   @Override
-  public boolean setDataRate(BaseAttribute attribute, int rate) {
+  public boolean setDataRate(ConfigurableRateAttribute attribute, int rate) {
+    attribute.setRateValue(rate);  // rate influences on batch data sizes so save it
+
     UM7BinaryPacket p;
     // read current register value
     try {
-      p = readRegister(attribute.getRegisterAddress());
+      p = readRegister(attribute.getRateConfRegisterAddress());
     } catch (OperationTimeoutException e) {
       e.printStackTrace();
       return false;
@@ -343,11 +345,11 @@ public class DefaultUM7Client implements UM7Client {
     }
 
     // clear old val
-    long mask = ((1 << attribute.getWidth()) - 1);
-    reg_val &= ~( mask << attribute.getBitOffset() );
+    long mask = ((1 << attribute.getRateConfWidth()) - 1);
+    reg_val &= ~( mask << attribute.getRateConfBitOffset() );
 
     // assign new val
-    reg_val |= (rate & mask) << attribute.getBitOffset();
+    reg_val |= (rate & mask) << attribute.getRateConfBitOffset();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     final DataOutputStream new_data = new DataOutputStream(baos);
@@ -359,7 +361,7 @@ public class DefaultUM7Client implements UM7Client {
     }
     byte[] res = baos.toByteArray();
     try {
-      writeRegister(attribute.getRegisterAddress(), res.length / 4, res, defaultTimeoutInSeconds, true);
+      writeRegister(attribute.getRateConfRegisterAddress(), res.length / 4, res, defaultTimeoutInSeconds, true);
     } catch (OperationTimeoutException e) {
       e.printStackTrace();
       return false;
