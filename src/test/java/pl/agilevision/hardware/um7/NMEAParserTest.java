@@ -47,4 +47,18 @@ public class NMEAParserTest {
 
     assertNotNull(nmeaPacket);
   }
+
+  @Test
+  public void testParseSensor(){
+
+    final byte[] data = "$PCHRS,1,105.015,-0.9987,-0.9987,-0.9987,*79".getBytes(
+        StandardCharsets.US_ASCII);
+
+    // Then
+    assertTrue(parser.canParse(data));
+
+    UM7Packet nmeaPacket = parser.parse(data);
+
+    assertNotNull(nmeaPacket);
+  }
 }

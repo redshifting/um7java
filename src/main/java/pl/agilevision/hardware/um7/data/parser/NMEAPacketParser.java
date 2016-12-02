@@ -66,7 +66,7 @@ public class NMEAPacketParser implements PacketParser {
     PACKET_COLUMNS_MAPPING.put(RatePacket.HEADER,
         new String[]{});
     PACKET_COLUMNS_MAPPING.put(SensorPacket.HEADER,
-        new String[]{});
+        new String[]{"sensorType", "time", "x", "y", "z"});
 
   }
 
