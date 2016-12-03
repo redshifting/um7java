@@ -321,8 +321,6 @@ public class DefaultUM7Client implements UM7Client {
 
   @Override
   public boolean setDataRate(ConfigurableRateAttribute attribute, int rate) {
-    attribute.setRateValue(rate);  // rate influences on batch data sizes so save it
-
     UM7BinaryPacket p;
     // read current register value
     try {

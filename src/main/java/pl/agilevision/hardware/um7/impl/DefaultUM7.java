@@ -141,17 +141,13 @@ public class DefaultUM7 implements UM7 {
     } catch (final Exception e){
       throw new DeviceConnectionException("Failed to catch sample", e);
     }
-
-
   }
 
-
-
   private UM7DataSample parseDataBatch(byte[] data, int startAddress) throws IOException {
-
-
     final Map<String, Object> output = new HashMap<>();
     final DataInputStream is = new DataInputStream(new ByteArrayInputStream(data));
+    int size = data.length / 4;
+
 
     if (startAddress == UM7Constants.Registers.DREG_HEALTH) {
       // (0x55,  85) Health register
@@ -160,7 +156,7 @@ public class DefaultUM7 implements UM7 {
     /* **************************
        Processed sensor Section
      **************************** */
-    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_PROC_X && UM7Attributes.AllProc.getRateValue() != 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_PROC_X && size == 12) {
       //All processed data comprises registers 97 through 108 (a total of 12 registers). If
       //ALL_PROC_RATE is non-zero, the processed data will be transmitted as a single packet of batch
       //length 12, starting at address 97.
@@ -181,20 +177,20 @@ public class DefaultUM7 implements UM7 {
       output.put(UM7Attributes.Magnetometer.Processed.Z, is.readFloat());
       output.put(UM7Attributes.Magnetometer.Processed.Time, is.readFloat());
 
-    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_PROC_X && UM7Attributes.AllProc.getRateValue() != 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_PROC_X) {
 
       output.put(UM7Attributes.Gyro.Processed.X, is.readFloat()); //f
       output.put(UM7Attributes.Gyro.Processed.Y, is.readFloat());
       output.put(UM7Attributes.Gyro.Processed.Z, is.readFloat());
       output.put(UM7Attributes.Gyro.Processed.Time, is.readFloat());
-    } else if (startAddress == UM7Constants.Registers.DREG_ACCEL_PROC_X && UM7Attributes.AllProc.getRateValue() != 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_ACCEL_PROC_X) {
 
       output.put(UM7Attributes.Accelerator.Processed.X, is.readFloat());
       output.put(UM7Attributes.Accelerator.Processed.Y, is.readFloat());
       output.put(UM7Attributes.Accelerator.Processed.Z, is.readFloat());
       output.put(UM7Attributes.Accelerator.Processed.Time, is.readFloat());
 
-    } else if (startAddress == UM7Constants.Registers.DREG_MAG_PROC_X && UM7Attributes.AllProc.getRateValue() != 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_MAG_PROC_X) {
       output.put(UM7Attributes.Magnetometer.Processed.X, is.readFloat());
       output.put(UM7Attributes.Magnetometer.Processed.Y, is.readFloat());
       output.put(UM7Attributes.Magnetometer.Processed.Z, is.readFloat());
@@ -203,7 +199,7 @@ public class DefaultUM7 implements UM7 {
     /* **************************
        Raw sensor/temperature Section
      **************************** */
-    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_RAW_XY && UM7Attributes.AllRaw.getRateValue() != 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_RAW_XY && size == 11) {
       // if All Row data rate is not null  all raw data and temperature data is sent in one batch packet of length
       // 11, with start address 86.
       // (0x56,  86) Raw Rate Gyro Data: gyro xyz#t, accel xyz#t, mag xyz#t, temp ct
@@ -228,28 +224,28 @@ public class DefaultUM7 implements UM7 {
       output.put(UM7Attributes.Temperature.Value, is.readFloat()); //f
       output.put(UM7Attributes.Temperature.Time, is.readFloat()); //f
 
-    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_RAW_XY && UM7Attributes.AllRaw.getRateValue() == 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_GYRO_RAW_XY) {
       // 3x
       output.put(UM7Attributes.Gyro.Raw.X, is.readShort() / DEGREES_DIVIDER); //h
       output.put(UM7Attributes.Gyro.Raw.Y, is.readShort() / DEGREES_DIVIDER);
       output.put(UM7Attributes.Gyro.Raw.Z, is.readShort() / DEGREES_DIVIDER);
       is.skipBytes(2); //2x
       output.put(UM7Attributes.Gyro.Raw.Time, is.readFloat()); //f
-    } else if (startAddress == UM7Constants.Registers.DREG_ACCEL_RAW_XY && UM7Attributes.AllRaw.getRateValue() == 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_ACCEL_RAW_XY) {
       // 3x
       output.put(UM7Attributes.Accelerator.Raw.X, is.readShort() / DEGREES_DIVIDER); //h
       output.put(UM7Attributes.Accelerator.Raw.Y, is.readShort() / DEGREES_DIVIDER);
       output.put(UM7Attributes.Accelerator.Raw.Z, is.readShort() / DEGREES_DIVIDER);
       is.skipBytes(2); //2x
       output.put(UM7Attributes.Accelerator.Raw.Time, is.readFloat()); //f
-    } else if (startAddress == UM7Constants.Registers.DREG_MAG_RAW_XY && UM7Attributes.AllRaw.getRateValue() == 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_MAG_RAW_XY) {
       // 3x
       output.put(UM7Attributes.Magnetometer.Raw.X, is.readShort()); //h
       output.put(UM7Attributes.Magnetometer.Raw.Y, is.readShort());
       output.put(UM7Attributes.Magnetometer.Raw.Z, is.readShort());
       is.skipBytes(2); //2x
       output.put(UM7Attributes.Magnetometer.Raw.Time, is.readFloat());
-    } else if (startAddress == UM7Constants.Registers.DREG_TEMPERATURE && UM7Attributes.AllRaw.getRateValue() == 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_TEMPERATURE) {
       // 3x 2bytes
       output.put(UM7Attributes.Temperature.Value, is.readFloat()); //f
       output.put(UM7Attributes.Temperature.Time, is.readFloat()); //f
@@ -268,27 +264,7 @@ public class DefaultUM7 implements UM7 {
     /* ************
        POSE - Euler/position packet
      ************** */
-    } else if (startAddress == UM7Constants.Registers.DREG_EULER_PHI_THETA && UM7Attributes.Pose.getRateValue() == 0) {
-      // 5x Euler Angle data
-      // (0x70, 112) Processed Euler Data:
-      output.put(UM7Attributes.Euler.Roll, is.readShort() / DEGREES_DIVIDER); //h
-      output.put(UM7Attributes.Euler.Pitch, is.readShort() / DEGREES_DIVIDER); //h
-      output.put(UM7Attributes.Euler.Yaw, is.readShort() / DEGREES_DIVIDER); //h
-      is.skipBytes(2); //2x
-      output.put(UM7Attributes.Euler.RollRate, is.readShort() / RATE_DIVIDER); //h
-      output.put(UM7Attributes.Euler.PitchRate, is.readShort() / RATE_DIVIDER); //h
-      output.put(UM7Attributes.Euler.YawRate, is.readShort() / RATE_DIVIDER); //h
-      is.skipBytes(2); //2x
-      output.put(UM7Attributes.Euler.Time, is.readFloat()); //f
-
-    } else if (startAddress == UM7Constants.Registers.DREG_POSITION_NORTH && UM7Attributes.Pose.getRateValue() == 0) {
-      // 4x Position
-      output.put(UM7Attributes.Position.North, is.readFloat());
-      output.put(UM7Attributes.Position.East, is.readFloat());
-      output.put(UM7Attributes.Position.Up, is.readFloat());
-      output.put(UM7Attributes.Position.Time, is.readFloat());
-
-    } else if (startAddress == UM7Constants.Registers.DREG_EULER_PHI_THETA && UM7Attributes.Pose.getRateValue() != 0) {
+    } else if (startAddress == UM7Constants.Registers.DREG_EULER_PHI_THETA && size == 9) {
       // Pose data (Euler Angles and position) is stored in registers 112 to 120. If the pose rate is
       //greater than 0, then pose data will be transmitted in a batch packet with length 9 and start
       // address 112.
@@ -303,6 +279,26 @@ public class DefaultUM7 implements UM7 {
       is.skipBytes(2); //2x
       output.put(UM7Attributes.Euler.Time, is.readFloat()); //f
 
+      output.put(UM7Attributes.Position.North, is.readFloat());
+      output.put(UM7Attributes.Position.East, is.readFloat());
+      output.put(UM7Attributes.Position.Up, is.readFloat());
+      output.put(UM7Attributes.Position.Time, is.readFloat());
+
+    } else if (startAddress == UM7Constants.Registers.DREG_EULER_PHI_THETA) {
+      // 5x Euler Angle data
+      // (0x70, 112) Processed Euler Data:
+      output.put(UM7Attributes.Euler.Roll, is.readShort() / DEGREES_DIVIDER); //h
+      output.put(UM7Attributes.Euler.Pitch, is.readShort() / DEGREES_DIVIDER); //h
+      output.put(UM7Attributes.Euler.Yaw, is.readShort() / DEGREES_DIVIDER); //h
+      is.skipBytes(2); //2x
+      output.put(UM7Attributes.Euler.RollRate, is.readShort() / RATE_DIVIDER); //h
+      output.put(UM7Attributes.Euler.PitchRate, is.readShort() / RATE_DIVIDER); //h
+      output.put(UM7Attributes.Euler.YawRate, is.readShort() / RATE_DIVIDER); //h
+      is.skipBytes(2); //2x
+      output.put(UM7Attributes.Euler.Time, is.readFloat()); //f
+
+    } else if (startAddress == UM7Constants.Registers.DREG_POSITION_NORTH) {
+      // 4x Position
       output.put(UM7Attributes.Position.North, is.readFloat());
       output.put(UM7Attributes.Position.East, is.readFloat());
       output.put(UM7Attributes.Position.Up, is.readFloat());
@@ -372,7 +368,6 @@ public class DefaultUM7 implements UM7 {
 
       output.put(UM7Attributes.GpsSateliteDetails.Sat12Id, is.readByte());
       output.put(UM7Attributes.GpsSateliteDetails.Sat12Snr, is.readByte());
-
 
 // todo CREG_GYRO_TRIM_* is not data register, should we parse it here?
 //    } else if (startAddress == UM7Constants.Registers.CREG_GYRO_TRIM_X) {

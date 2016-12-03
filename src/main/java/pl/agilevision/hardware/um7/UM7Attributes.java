@@ -64,13 +64,10 @@ public interface UM7Attributes {
 
   // attributes with only ON/OFF rates
   Gps Gps = new Gps(
-    UM7Constants.Registers.CREG_COM_SETTINGS, "GPS", 8, 1, 0);
+    UM7Constants.Registers.CREG_COM_SETTINGS, "GPS", 8, 1);
 
   GpsSateliteDetails GpsSateliteDetails = new GpsSateliteDetails(
-    UM7Constants.Registers.CREG_COM_SETTINGS, "SAT", 4, 1, 0);
-
-  // Attributes with non-configurable Rates todo, mb not needed here
-  //GyroTrim GyroTrim = new GyroTrim();
+    UM7Constants.Registers.CREG_COM_SETTINGS, "SAT", 4, 1);
 
   interface Frequency {
     interface Gps {

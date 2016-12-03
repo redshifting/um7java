@@ -9,23 +9,17 @@ public class ConfigurableRateAttribute {
   private int rateConfRegisterAddress;
   private int rateConfBitOffset;
   private int rateConfWidth;
-  private int rateValue;
   private String rateConfName;
 
   public ConfigurableRateAttribute(int rateConfRegisterAddress, String rateConfName, int rateConfBitOffset){
-    this(rateConfRegisterAddress, rateConfName, rateConfBitOffset, 8, 0);
+    this(rateConfRegisterAddress, rateConfName, rateConfBitOffset, 8);
   }
 
-  public ConfigurableRateAttribute(int rateConfRegisterAddress, String rateConfName, int rateConfBitOffset, int defaultRate){
-    this(rateConfRegisterAddress, rateConfName, rateConfBitOffset, 8, defaultRate);
-  }
-
-  public ConfigurableRateAttribute(int rateConfRegisterAddress, String rateConfName, int rateConfBitOffset, int rateConfWidth, int defaultRate){
+  public ConfigurableRateAttribute(int rateConfRegisterAddress, String rateConfName, int rateConfBitOffset, int rateConfWidth){
     this.rateConfRegisterAddress = rateConfRegisterAddress;
     this.rateConfBitOffset = rateConfBitOffset;
     this.rateConfWidth = rateConfWidth;
     this.rateConfName = rateConfName;
-    this.rateValue = defaultRate;  // current rate value influences on batch data portions so we need to store it
   }
 
   public int getRateConfRegisterAddress() {
@@ -42,11 +36,4 @@ public class ConfigurableRateAttribute {
 
   public String getRateConfName() { return rateConfName; }
 
-  public int getRateValue() {
-    return rateValue;
-  }
-
-  public void setRateValue(int rateValue) {
-    this.rateValue = rateValue;
-  }
 }

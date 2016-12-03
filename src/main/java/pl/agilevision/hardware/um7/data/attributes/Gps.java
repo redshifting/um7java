@@ -13,7 +13,7 @@ public class Gps extends ConfigurableRateAttribute {
   public static String Speed = "gps_speed";
   public static String Time = "gps_time";
 
-  public Gps(int registerAddress, String name, int bitOffset, int bitWidth, int defaultValue) {
-    super(registerAddress, name, bitOffset, bitWidth, defaultValue);
+  public Gps(int registerAddress, String name, int bitOffset, int bitWidth) {
+    super(registerAddress, name, bitOffset, bitWidth);
   }
 }

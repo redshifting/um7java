@@ -42,7 +42,7 @@ public class GpsSateliteDetails extends ConfigurableRateAttribute {
   public static String Sat12Id = "gps_sat_12_id";
   public static String Sat12Snr = "gps_sat_12_snr";
 
-  public GpsSateliteDetails(int registerAddress, String name, int bitOffset, int bitWidth, int defaultValue) {
-    super(registerAddress, name, bitOffset, bitWidth, defaultValue);
+  public GpsSateliteDetails(int registerAddress, String name, int bitOffset, int bitWidth) {
+    super(registerAddress, name, bitOffset, bitWidth);
   }
 }
