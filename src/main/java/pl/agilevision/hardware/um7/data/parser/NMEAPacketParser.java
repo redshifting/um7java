@@ -67,15 +67,11 @@ public class NMEAPacketParser implements PacketParser {
         new String[]{"time", "velocityNorth", "velocityEast", "velocityUpward", "rollRate", "pitchRate", "yawRate"});
     PACKET_COLUMNS_MAPPING.put(SensorPacket.HEADER,
         new String[]{"sensorType", "time", "x", "y", "z"});
-
   }
-
-
 
   public NMEAPacketParser(){
 
   }
-
 
   @Override
   public boolean canParse(byte[] data) {
