@@ -320,18 +320,10 @@ public class DefaultUM7Client implements UM7Client {
   }
 
   @Override
-  public boolean setDataRate(ConfigurableRateAttribute attribute, int rate) {
+  public boolean setDataRate(ConfigurableRateAttribute attribute, int rate) throws OperationTimeoutException, DeviceConnectionException {
     UM7BinaryPacket p;
     // read current register value
-    try {
-      p = readRegister(attribute.getRateConfRegisterAddress());
-    } catch (OperationTimeoutException e) {
-      e.printStackTrace();
-      return false;
-    } catch (DeviceConnectionException e) {
-      e.printStackTrace();
-      return false;
-    }
+    p = readRegister(attribute.getRateConfRegisterAddress());
     final DataInputStream p_data = new DataInputStream(new ByteArrayInputStream(p.data));
 
     long reg_val;
@@ -358,15 +350,8 @@ public class DefaultUM7Client implements UM7Client {
       return false;
     }
     byte[] res = baos.toByteArray();
-    try {
-      writeRegister(attribute.getRateConfRegisterAddress(), res.length / 4, res, defaultTimeoutInSeconds, true);
-    } catch (OperationTimeoutException e) {
-      e.printStackTrace();
-      return false;
-    } catch (DeviceConnectionException e) {
-      e.printStackTrace();
-      return false;
-    }
+
+    writeRegister(attribute.getRateConfRegisterAddress(), res.length / 4, res, defaultTimeoutInSeconds, true);
 
     return true;
   }

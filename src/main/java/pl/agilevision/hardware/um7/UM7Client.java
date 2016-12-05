@@ -93,7 +93,7 @@ public interface UM7Client {
    *              - for all other attribute rate is int from 0 to 255 that defines frequency in Hz
    * @return
    */
-  boolean setDataRate(ConfigurableRateAttribute attribute, int rate);
+  boolean setDataRate(ConfigurableRateAttribute attribute, int rate) throws OperationTimeoutException, DeviceConnectionException;
 
 
   /**

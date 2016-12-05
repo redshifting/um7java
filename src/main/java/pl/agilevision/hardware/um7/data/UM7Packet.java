@@ -1,5 +1,6 @@
 package pl.agilevision.hardware.um7.data;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,9 @@ public class UM7Packet {
    */
   private Map<String, Object> attributes;
 
+  public UM7Packet() {
+    this.attributes = new HashMap<String, Object>();
+  }
 
   public Map<String, Object> getAttributes() {
     return attributes;

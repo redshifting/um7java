@@ -56,11 +56,11 @@ public interface UM7Attributes {
 
   // Rates that re-defines batch groups
   ConfigurableRateAttribute AllRaw = new ConfigurableRateAttribute(
-    UM7Constants.Registers.CREG_COM_RATES2, "ALL_RAW_RATE", 0, 1);
+    UM7Constants.Registers.CREG_COM_RATES2, "ALL_RAW_RATE", 0);
   ConfigurableRateAttribute AllProc = new ConfigurableRateAttribute(
-    UM7Constants.Registers.CREG_COM_RATES4, "ALL_PROC_RATE", 0, 1);
+    UM7Constants.Registers.CREG_COM_RATES4, "ALL_PROC_RATE", 0);
   ConfigurableRateAttribute Pose = new ConfigurableRateAttribute(
-    UM7Constants.Registers.CREG_COM_RATES6, "POSE_RATE", 24, 0);
+    UM7Constants.Registers.CREG_COM_RATES6, "POSE_RATE", 24);
 
   // attributes with only ON/OFF rates
   Gps Gps = new Gps(

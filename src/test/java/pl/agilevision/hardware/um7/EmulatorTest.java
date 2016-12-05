@@ -24,8 +24,9 @@ public class EmulatorTest {
     };
 
     String head = "";
+    String width = "%15s";
     for (String s: statevars) {
-      head += String.format("%10s ", s);
+      head += String.format(width, s);
     }
 
     UM7Client um7cli = new DefaultUM7Client("um7", "COM1", 115200, 0.1f);
@@ -36,74 +37,77 @@ public class EmulatorTest {
     boolean rEkf_ok = um7.resetEkf();
     System.out.println("RESET_EKF  " + (rEkf_ok ? "ok":"failed."));
 
-    boolean setR_ok = um7cli.setDataRate(UM7Attributes.Accelerator.Raw, 7);
-    System.out.println("Set Accel Raw Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Gyro.Raw, 7);
-    System.out.println("Set Gyro Raw Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Magnetometer.Raw, 0xAA);
-    System.out.println("Set Mag Raw Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.AllRaw, 0xFF);
-    System.out.println("Set All Raw Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Temperature, 0xAA);
-    System.out.println("Set Temp Rate Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Accelerator.Processed, 0xAA);
-    System.out.println("Set Accel Proc Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Gyro.Processed, 0xAA);
-    System.out.println("Set Gyro Proc Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Magnetometer.Processed, 0xAA);
-    System.out.println("Set Mag Proc Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.AllProc, 0xAA);
-    System.out.println("Set All proc Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Quat, 0xAA);
-    System.out.println("Set Quat Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Euler, 0xAA);
-    System.out.println("Set Euler Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Position, 0xAA);
-    System.out.println("Set Position Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Velocity, 0xAA);
-    System.out.println("Set Velocity Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.Pose, 0xAA);
-    System.out.println("Set Pose Rate " + (setR_ok ? "ok":"failed."));
+    boolean setR_ok;
 
     setR_ok = um7cli.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
     System.out.println("Set Health Rate " + (setR_ok ? "ok":"failed."));
 
-    setR_ok = um7cli.setDataRate(UM7Attributes.GyroBias, 0xAA);
-    System.out.println("Set GyroBias Rate " + (setR_ok ? "ok":"failed."));
+//    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq15_HZ);
+//    System.out.println("Set NMEA.Health Rate " + (setR_ok ? "ok":"failed."));
 
-    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq15_HZ);
-    System.out.println("Set NMEA.Health Rate " + (setR_ok ? "ok":"failed."));
+//    boolean setR_ok = um7cli.setDataRate(UM7Attributes.Accelerator.Raw, 7);
+//    System.out.println("Set Accel Raw Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Gyro.Raw, 7);
+//    System.out.println("Set Gyro Raw Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Magnetometer.Raw, 0xAA);
+//    System.out.println("Set Mag Raw Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.AllRaw, 0xFF);
+//    System.out.println("Set All Raw Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Temperature, 0xAA);
+//    System.out.println("Set Temp Rate Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Accelerator.Processed, 0xAA);
+//    System.out.println("Set Accel Proc Rate " + (setR_ok ? "ok":"failed."));
 
-    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Pose, UM7Attributes.Frequency.NMEA.Freq15_HZ);
-    System.out.println("Set NMEA.Pose Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Attitude, UM7Attributes.Frequency.NMEA.Freq15_HZ);
-    System.out.println("Set NMEA.Attitude Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Sensor, UM7Attributes.Frequency.NMEA.Freq15_HZ);
-    System.out.println("Set NMEA.Sensor Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Rates, UM7Attributes.Frequency.NMEA.Freq15_HZ);
-    System.out.println("Set NMEA.Rates Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.Freq15_HZ);
-    System.out.println("Set NMEA.GpsPose Rate " + (setR_ok ? "ok":"failed."));
-
-    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Quat, UM7Attributes.Frequency.NMEA.Freq15_HZ);
-    System.out.println("Set NMEA.Quat Rate " + (setR_ok ? "ok":"failed."));
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Gyro.Processed, 0xAA);
+//    System.out.println("Set Gyro Proc Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Magnetometer.Processed, 0xAA);
+//    System.out.println("Set Mag Proc Rate " + (setR_ok ? "ok":"failed."));
+//
+    setR_ok = um7cli.setDataRate(UM7Attributes.AllProc, 0xAA);
+    System.out.println("Set All proc Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Quat, 0xAA);
+//    System.out.println("Set Quat Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Euler, 0xAA);
+//    System.out.println("Set Euler Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Position, 0xAA);
+//    System.out.println("Set Position Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Velocity, 0xAA);
+//    System.out.println("Set Velocity Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Pose, 0xAA);
+//    System.out.println("Set Pose Rate " + (setR_ok ? "ok":"failed."));
+//
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.GyroBias, 0xAA);
+//    System.out.println("Set GyroBias Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Pose, UM7Attributes.Frequency.NMEA.Freq15_HZ);
+//    System.out.println("Set NMEA.Pose Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Attitude, UM7Attributes.Frequency.NMEA.Freq15_HZ);
+//    System.out.println("Set NMEA.Attitude Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Sensor, UM7Attributes.Frequency.NMEA.Freq15_HZ);
+//    System.out.println("Set NMEA.Sensor Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Rates, UM7Attributes.Frequency.NMEA.Freq15_HZ);
+//    System.out.println("Set NMEA.Rates Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.Freq15_HZ);
+//    System.out.println("Set NMEA.GpsPose Rate " + (setR_ok ? "ok":"failed."));
+//
+//    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Quat, UM7Attributes.Frequency.NMEA.Freq15_HZ);
+//    System.out.println("Set NMEA.Quat Rate " + (setR_ok ? "ok":"failed."));
 
 
     int c = 0;
@@ -124,19 +128,19 @@ public class EmulatorTest {
         for (String v : statevars) {
           if (um7.getState().hasValue(v)) {
             if (v.equals("health")) {
-              s += String.format("%10s", String.format("%8s", Integer.toBinaryString(um7.getState().getValue(v, Integer.TYPE))).replace(' ', '0'));
+              s += String.format(width, String.format("%8s", Integer.toBinaryString(um7.getState().getValue(v, Integer.TYPE))).replace(' ', '0'));
             } else {
               Object o = um7.getState().getValue(v);
               if (o instanceof Integer) {
-                s += String.format("%10s", String.format("%4d", (int) o));
+                s += String.format(width, String.format("%4d", (int) o));
               } else if (o instanceof Float) {
-                s += String.format("%10s", String.format("%1.3f", (float) o));
+                s += String.format(width, String.format("%1.3f", (float) o));
               } else {
-                s += String.format("%10s", String.format("%1.3f", (double) o));
+                s += String.format(width, String.format("%1.3f", (double) o));
               }
             }
           } else {
-            s += String.format("%10d", 0);
+            s += String.format(width, 0);
           }
         }
         System.out.println(s);

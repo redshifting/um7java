@@ -135,7 +135,7 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
     }
   }
   @Test
-  public void testSetDataRate() throws DeviceConnectionException {
+  public void testSetDataRate() throws DeviceConnectionException, OperationTimeoutException {
     info("Set DataRate check");
     final UM7Client client = new DefaultUM7Client(TEST_DEVICE_NAME, TEST_PORT_NAME);
 
