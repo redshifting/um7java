@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.UM7Constants;
+import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.data.parser.NMEAPacketParser;
@@ -55,6 +56,9 @@ public class DefaultUM7Client implements UM7Client {
     baudRates.put(921600, 11);
 
     nmea_pack = new byte[1024]; // suppose that max nmea packet length is 1024
+    nmea_pack[0] = '$';
+    nmea_pack[1] = 'P';
+    nmea_pack[2] = 'C';
   }
 
 
@@ -260,11 +264,16 @@ public class DefaultUM7Client implements UM7Client {
           cur_b = this.readByte();
           nmea_pack[cur_pos ++] = (byte) (cur_b & 0xFF);
         } while (cur_b != '\r');
-        byte [] res = new byte[cur_b];
-        System.arraycopy(nmea_pack, 0, res, 0, cur_b);
+        byte [] res = new byte[cur_pos - 1];
+        System.arraycopy(nmea_pack, 0, res, 0, cur_pos - 1);
 
-        NMEAPacketParser.getParser().parse(res);
-
+        LOG.debug("NMEA packet");
+        UM7Packet p = NMEAPacketParser.getParser().parse(res);
+        for (Map.Entry<String, Object> entry : p.getAttributes().entrySet())
+        {
+          LOG.debug(entry.getKey() + ": " + entry.getValue().toString());
+        }
+        return new UM7BinaryPacket(false, false, startaddress, null, false, false);
       }
     }
     return new UM7BinaryPacket(packetFound == 1, hasdata == 1, startaddress, data, commandfailed == 1, timeouted == 1);

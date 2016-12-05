@@ -39,11 +39,11 @@ public class EmulatorTest {
 
     boolean setR_ok;
 
-    setR_ok = um7cli.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
-    System.out.println("Set Health Rate " + (setR_ok ? "ok":"failed."));
+//    setR_ok = um7cli.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
+//    System.out.println("Set Health Rate " + (setR_ok ? "ok":"failed."));
 
-//    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq15_HZ);
-//    System.out.println("Set NMEA.Health Rate " + (setR_ok ? "ok":"failed."));
+    setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq15_HZ);
+    System.out.println("Set NMEA.Health Rate " + (setR_ok ? "ok":"failed."));
 
 //    boolean setR_ok = um7cli.setDataRate(UM7Attributes.Accelerator.Raw, 7);
 //    System.out.println("Set Accel Raw Rate " + (setR_ok ? "ok":"failed."));

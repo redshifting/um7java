@@ -19,6 +19,7 @@ import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -94,7 +95,6 @@ public class NMEAPacketParser implements PacketParser {
 
     if (PACKET_MAPPINGS.containsKey(header)) {
 
-
       final int dataStart = PACKET_HEADER_LENGTH;
       final int dataEnd = data.length - CHECKSUM_BLOCK_SIZE;
 
@@ -111,7 +111,14 @@ public class NMEAPacketParser implements PacketParser {
         final Class<? extends UM7NMEAPacket> targetClass = PACKET_MAPPINGS.get(header);
         final String[] mappings = PACKET_COLUMNS_MAPPING.get(header);
 
-        return beanReader.read(targetClass, mappings);
+        UM7NMEAPacket p = beanReader.read(targetClass, mappings);
+
+        for(String k: mappings) {
+          if (k != null) {
+            p.getAttributes().put(k, p.getFieldByName(k));
+          }
+        }
+        return p;
       } catch (IOException e) {
         LOG.error("Failed to parse package", e);
         return null;
