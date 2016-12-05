@@ -73,6 +73,15 @@ public class NMEAPacketParser implements PacketParser {
 
   }
 
+  private static NMEAPacketParser single;
+
+  public static NMEAPacketParser getParser() {
+    if (single == null) {
+      single = new NMEAPacketParser();
+    }
+    return single;
+  }
+
   @Override
   public boolean canParse(byte[] data) {
     return ParserUtils.beginsWith(data, PACKET_PREFIX);

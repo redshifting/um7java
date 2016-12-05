@@ -7,6 +7,7 @@ import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.UM7Constants;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
+import pl.agilevision.hardware.um7.data.parser.NMEAPacketParser;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
@@ -36,6 +37,7 @@ public class DefaultUM7Client implements UM7Client {
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final Map<Integer, Integer> baudRates;
+  private static byte[] nmea_pack;
   static
   {
     baudRates = new HashMap<>();
@@ -51,6 +53,8 @@ public class DefaultUM7Client implements UM7Client {
     baudRates.put(256000, 9);
     baudRates.put(460800, 10);
     baudRates.put(921600, 11);
+
+    nmea_pack = new byte[1024]; // suppose that max nmea packet length is 1024
   }
 
 
@@ -249,6 +253,17 @@ public class DefaultUM7Client implements UM7Client {
         }
       } else {
         // is NMEA packet
+        int cur_pos = 3;
+
+        int cur_b;
+        do {
+          cur_b = this.readByte();
+          nmea_pack[cur_pos ++] = (byte) (cur_b & 0xFF);
+        } while (cur_b != '\r');
+        byte [] res = new byte[cur_b];
+        System.arraycopy(nmea_pack, 0, res, 0, cur_b);
+
+        NMEAPacketParser.getParser().parse(res);
 
       }
     }
