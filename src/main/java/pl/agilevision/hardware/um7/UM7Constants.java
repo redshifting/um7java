@@ -118,7 +118,7 @@ public interface UM7Constants {
   }
 
   /**
-   * Health
+   * NmeaHealth
    */
   interface Health {
     int HEALTH_GPS   = 0x1;

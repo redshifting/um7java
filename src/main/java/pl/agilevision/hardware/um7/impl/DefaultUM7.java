@@ -69,8 +69,6 @@ public class DefaultUM7 implements UM7 {
     return all_found;
   }
 
-  ;
-
   public DefaultUM7(UM7Client um7Client, final String [] stateVars) {
     this.um7Client = um7Client;
     Map<String, Object> m = new HashMap<>();

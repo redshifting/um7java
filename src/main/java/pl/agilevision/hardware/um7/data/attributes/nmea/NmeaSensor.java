@@ -1,6 +1,5 @@
 package pl.agilevision.hardware.um7.data.attributes.nmea;
 
-import org.supercsv.cellprocessor.ParseBool;
 import org.supercsv.cellprocessor.ParseDouble;
 import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.constraint.NotNull;
@@ -8,40 +7,30 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 
 /**
- * NmeaHealth configuration
+ * NmeaSensor configuration
  * @author Ivan Borschov (iborschov@agilevision.pl)
  */
-public class NmeaPose extends ConfigurableRateAttribute {
+public class NmeaSensor extends ConfigurableRateAttribute {
 
-  public static final String NMEA_HEADER = "$PCHRP";
+  public static final String NMEA_HEADER = "$PCHRS";
 
-  public static final String Time = "nmea_pose_time";
-  public static final String HomeNorth = "nmea_pose_home_north";
-  public static final String HomeEast = "nmea_pose_home_east";
-  public static final String HomeAltitude = "nmea_pose_home_altitude";
-  public static final String Roll = "nmea_pose_home_roll";
-  public static final String Pitch = "nmea_pose_home_pitch";
-  public static final String Yaw = "nmea_pose_home_yaw";
-  public static final String Heading = "nmea_pose_home_heading";
+  public static final String SensorType = "nmea_sensor_type";
+  public static final String Time = "nmea_sensor_time";
+  public static final String X = "nmea_sensor_x";
+  public static final String Y = "nmea_sensor_y";
+  public static final String Z = "nmea_sensor_z";
 
+  public static final String[] parseFormat = {SensorType, Time, X, Y, Z};
 
-  public static final String[] parseFormat = {Time, HomeNorth, HomeEast, HomeAltitude, Roll, Pitch, Yaw,
-    Heading, NmeaCheckSumField};
-
-  public static final CellProcessor[] parseCellProcessor = new CellProcessor[]{
-    new ParseDouble(), // Time
-    new ParseDouble(), // HomeNorth
-    new ParseDouble(), // HomeEast",
-
-    new ParseDouble(), // HomeAltitude
-    new ParseDouble(), // Roll
-    new ParseDouble(), // Pitch
-    new ParseDouble(), // Yaw
-    new ParseDouble(), // Heading
-    new NotNull(), // checksum"
+  public static final CellProcessor[] parseCellProcessor = new CellProcessor[] {
+    new ParseInt(), //sensorType
+    new ParseDouble(), //time
+    new ParseDouble(), //x
+    new ParseDouble(), //y
+    new ParseDouble(), //z
   };
 
-  public NmeaPose(int registerAddress, String name, int bitOffset, int bitWidth) {
+  public NmeaSensor(int registerAddress, String name, int bitOffset, int bitWidth) {
     super(registerAddress, name, bitOffset, bitWidth);
   }
 }

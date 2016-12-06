@@ -5,6 +5,7 @@ import pl.agilevision.hardware.um7.data.attributes.Temperature;
 import pl.agilevision.hardware.um7.data.attributes.Quat;
 import pl.agilevision.hardware.um7.data.attributes.Euler;
 import pl.agilevision.hardware.um7.data.attributes.Health;
+import pl.agilevision.hardware.um7.data.attributes.nmea.*;
 
 /**
  * Describes available UM7 properties
@@ -38,20 +39,13 @@ public interface UM7Attributes {
   GyroBias GyroBias = new GyroBias(UM7Constants.Registers.CREG_COM_RATES6, "GYRO_BIAS_RATE", 8);
 
   interface NMEA {
-    ConfigurableRateAttribute Health = new ConfigurableRateAttribute(
-      UM7Constants.Registers.CREG_COM_RATES7, "NMEA HEALTH_RATE", 28,  4);
-    ConfigurableRateAttribute Pose = new ConfigurableRateAttribute(
-      UM7Constants.Registers.CREG_COM_RATES7, "NMEA POSE_RATE", 24, 4);
-    ConfigurableRateAttribute Attitude = new ConfigurableRateAttribute(
-      UM7Constants.Registers.CREG_COM_RATES7, "NMEA ATTITUDE_RATE", 20, 4);
-    ConfigurableRateAttribute Sensor = new ConfigurableRateAttribute(
-      UM7Constants.Registers.CREG_COM_RATES7, "NMEA SENSOR_RATE", 16, 4);
-    ConfigurableRateAttribute Rates = new ConfigurableRateAttribute(
-      UM7Constants.Registers.CREG_COM_RATES7, "NMEA RATES_RATE", 12, 4);
-    ConfigurableRateAttribute GpsPose = new ConfigurableRateAttribute(
-      UM7Constants.Registers.CREG_COM_RATES7, "NMEA GPS_POSE_RATE", 8, 4);
-    ConfigurableRateAttribute Quat = new ConfigurableRateAttribute(
-      UM7Constants.Registers.CREG_COM_RATES7, "NMEA QUAT_RATE", 4, 4);
+    NmeaHealth Health = new NmeaHealth(UM7Constants.Registers.CREG_COM_RATES7, "NMEA HEALTH_RATE", 28,  4);
+    NmeaPose Pose = new NmeaPose(UM7Constants.Registers.CREG_COM_RATES7, "NMEA POSE_RATE", 24, 4);
+    NmeaAttitude Attitude = new NmeaAttitude(UM7Constants.Registers.CREG_COM_RATES7, "NMEA ATTITUDE_RATE", 20, 4);
+    NmeaSensor Sensor = new NmeaSensor(UM7Constants.Registers.CREG_COM_RATES7, "NMEA SENSOR_RATE", 16, 4);
+    NmeaRate Rates = new NmeaRate(UM7Constants.Registers.CREG_COM_RATES7, "NMEA RATES_RATE", 12, 4);
+    NmeaGpsPose GpsPose = new NmeaGpsPose(UM7Constants.Registers.CREG_COM_RATES7, "NMEA GPS_POSE_RATE", 8, 4);
+    NmeaQuaternion Quat = new NmeaQuaternion(UM7Constants.Registers.CREG_COM_RATES7, "NMEA QUAT_RATE", 4, 4);
   }
 
   // Rates that re-defines batch groups

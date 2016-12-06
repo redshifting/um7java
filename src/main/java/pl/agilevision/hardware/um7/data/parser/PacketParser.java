@@ -13,12 +13,12 @@ public interface PacketParser {
    * @param data data to be parsed
    * @return true if the data can be parsed
    */
-  boolean canParse(final byte[] data);
+  boolean canParse(final byte[] data, Integer... startAddress);
 
   /**
    * Parses data and returns the packet
    * @param data data to parse
    * @return packet
    */
-  UM7Packet parse(final byte[] data);
+  UM7Packet parse(final byte[] data, Integer... startAddress);
 }

@@ -2,24 +2,22 @@ package pl.agilevision.hardware.um7.data.parser;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.supercsv.io.CsvBeanReader;
-import org.supercsv.io.ICsvBeanReader;
+import org.supercsv.cellprocessor.ParseDouble;
+import org.supercsv.cellprocessor.ParseInt;
+import org.supercsv.cellprocessor.constraint.NotNull;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvMapReader;
+import org.supercsv.io.ICsvMapReader;
 import org.supercsv.prefs.CsvPreference;
 import pl.agilevision.hardware.um7.data.UM7Packet;
-import pl.agilevision.hardware.um7.data.nmea.AttitudePacket;
-import pl.agilevision.hardware.um7.data.nmea.GpsPosePacket;
-import pl.agilevision.hardware.um7.data.nmea.HealthPacket;
-import pl.agilevision.hardware.um7.data.nmea.PosePacket;
-import pl.agilevision.hardware.um7.data.nmea.QuaternionPacket;
-import pl.agilevision.hardware.um7.data.nmea.RatePacket;
-import pl.agilevision.hardware.um7.data.nmea.SensorPacket;
+import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
+import pl.agilevision.hardware.um7.data.attributes.nmea.*;
 import pl.agilevision.hardware.um7.data.nmea.UM7NMEAPacket;
 import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,37 +35,27 @@ public class NMEAPacketParser implements PacketParser {
   private static final int CHECKSUM_BLOCK_SIZE = 4;
   private static final int RADIX_HEX = 16;
 
-
-  private static final Map<String, Class<? extends UM7NMEAPacket>> PACKET_MAPPINGS;
   private static final Map<String, String[]> PACKET_COLUMNS_MAPPING;
-
+  private static final Map<String, CellProcessor[]> PACKET_PROCESSOR_MAPPING;
 
   static {
-    PACKET_MAPPINGS = new HashMap<>();
-    PACKET_MAPPINGS.put(AttitudePacket.HEADER, AttitudePacket.class);
-    PACKET_MAPPINGS.put(GpsPosePacket.HEADER, GpsPosePacket.class);
-    PACKET_MAPPINGS.put(HealthPacket.HEADER, HealthPacket.class);
-    PACKET_MAPPINGS.put(PosePacket.HEADER, PosePacket.class);
-    PACKET_MAPPINGS.put(QuaternionPacket.HEADER, QuaternionPacket.class);
-    PACKET_MAPPINGS.put(RatePacket.HEADER, RatePacket.class);
-    PACKET_MAPPINGS.put(SensorPacket.HEADER, SensorPacket.class);
-
-
     PACKET_COLUMNS_MAPPING = new HashMap<>();
-    PACKET_COLUMNS_MAPPING.put(AttitudePacket.HEADER,
-        new String[]{"time", "roll", "pitch", "yaw", "heading"});
-    PACKET_COLUMNS_MAPPING.put(GpsPosePacket.HEADER,
-        new String[]{"time", "latitude", "longitude", "altitude", "roll", "pitch", "yaw", "heading"});
-    PACKET_COLUMNS_MAPPING.put(HealthPacket.HEADER,
-        new String[]{"time", "satsUsed", "satsInView", "hdop", "mode", "comFault", "acceleratorRateFault", "gyroRateFault", "magnetometerRateFault", "gpsOffline", null, null, null});
-    PACKET_COLUMNS_MAPPING.put(PosePacket.HEADER,
-        new String[]{"time", "homeNorth", "homeEast", "homeAltitude", "roll", "pitch", "yaw", "heading"});
-    PACKET_COLUMNS_MAPPING.put(QuaternionPacket.HEADER,
-        new String[]{"time", "a", "b", "c", "d"});
-    PACKET_COLUMNS_MAPPING.put(RatePacket.HEADER,
-        new String[]{"time", "velocityNorth", "velocityEast", "velocityUpward", "rollRate", "pitchRate", "yawRate"});
-    PACKET_COLUMNS_MAPPING.put(SensorPacket.HEADER,
-        new String[]{"sensorType", "time", "x", "y", "z"});
+    PACKET_COLUMNS_MAPPING.put(NmeaHealth.NMEA_HEADER, NmeaHealth.parseFormat);
+    PACKET_COLUMNS_MAPPING.put(NmeaPose.NMEA_HEADER, NmeaPose.parseFormat);
+    PACKET_COLUMNS_MAPPING.put(NmeaAttitude.NMEA_HEADER, NmeaAttitude.parseFormat);
+    PACKET_COLUMNS_MAPPING.put(NmeaSensor.NMEA_HEADER, NmeaSensor.parseFormat);
+    PACKET_COLUMNS_MAPPING.put(NmeaRate.NMEA_HEADER, NmeaRate.parseFormat);
+    PACKET_COLUMNS_MAPPING.put(NmeaGpsPose.NMEA_HEADER, NmeaGpsPose.parseFormat);
+    PACKET_COLUMNS_MAPPING.put(NmeaQuaternion.NMEA_HEADER, NmeaQuaternion.parseFormat);
+
+    PACKET_PROCESSOR_MAPPING = new HashMap<>();
+    PACKET_PROCESSOR_MAPPING.put(NmeaHealth.NMEA_HEADER, NmeaHealth.parseCellProcessor);
+    PACKET_PROCESSOR_MAPPING.put(NmeaPose.NMEA_HEADER, NmeaPose.parseCellProcessor);
+    PACKET_PROCESSOR_MAPPING.put(NmeaAttitude.NMEA_HEADER, NmeaAttitude.parseCellProcessor);
+    PACKET_PROCESSOR_MAPPING.put(NmeaSensor.NMEA_HEADER, NmeaSensor.parseCellProcessor);
+    PACKET_PROCESSOR_MAPPING.put(NmeaRate.NMEA_HEADER, NmeaRate.parseCellProcessor);
+    PACKET_PROCESSOR_MAPPING.put(NmeaGpsPose.NMEA_HEADER, NmeaGpsPose.parseCellProcessor);
+    PACKET_PROCESSOR_MAPPING.put(NmeaQuaternion.NMEA_HEADER, NmeaQuaternion.parseCellProcessor);
   }
 
   public NMEAPacketParser(){
@@ -84,45 +72,62 @@ public class NMEAPacketParser implements PacketParser {
   }
 
   @Override
-  public boolean canParse(byte[] data) {
+  public boolean canParse(byte[] data, Integer... startAddress) {
     return ParserUtils.beginsWith(data, PACKET_PREFIX);
   }
 
   @Override
-  public UM7Packet parse(byte[] data) {
+  public UM7Packet parse(byte[] data, Integer... startAddress) {
     final String header = new String(Arrays.copyOf(data, PACKET_HEADER_LENGTH - 1),
         StandardCharsets.US_ASCII);
 
-    if (PACKET_MAPPINGS.containsKey(header)) {
+    if (PACKET_COLUMNS_MAPPING.containsKey(header)) {
+      final String checksumStr =  new String(Arrays.copyOfRange(data, data.length - CHECKSUM_BLOCK_SIZE + 2, data.length));
+      final int checksum = Integer.parseInt(checksumStr, RADIX_HEX);
 
-      final int dataStart = PACKET_HEADER_LENGTH;
-      final int dataEnd = data.length - CHECKSUM_BLOCK_SIZE;
+      final byte[] csvData = Arrays.copyOfRange(data, PACKET_HEADER_LENGTH, data.length - CHECKSUM_BLOCK_SIZE);
 
-      final int checksum = Integer.parseInt(new String(Arrays.copyOfRange(data, dataEnd + 2, data.length),
-          StandardCharsets.US_ASCII), RADIX_HEX);
+      final ICsvMapReader mapReader  = new CsvMapReader(new InputStreamReader(new ByteArrayInputStream(csvData)),
+        CsvPreference.STANDARD_PREFERENCE);
 
-      final byte[] csvData = Arrays.copyOfRange(data, dataStart, dataEnd - 1);
+      final String[] mappings = PACKET_COLUMNS_MAPPING.get(header);
 
-      final ICsvBeanReader beanReader = new CsvBeanReader(
-          new InputStreamReader(new ByteArrayInputStream(csvData)),
-          CsvPreference.STANDARD_PREFERENCE);
-
+      Map<String, Object> attributesMap;
       try {
-        final Class<? extends UM7NMEAPacket> targetClass = PACKET_MAPPINGS.get(header);
-        final String[] mappings = PACKET_COLUMNS_MAPPING.get(header);
-
-        UM7NMEAPacket p = beanReader.read(targetClass, mappings);
-
-        for(String k: mappings) {
-          if (k != null) {
-            p.getAttributes().put(k, p.getFieldByName(k));
-          }
-        }
-        return p;
+        attributesMap = mapReader.read(mappings, PACKET_PROCESSOR_MAPPING.get(header));
       } catch (IOException e) {
-        LOG.error("Failed to parse package", e);
+        e.printStackTrace();
+        LOG.warn("IO exception when parsing NMEA {}, {}", header, data);
         return null;
       }
+
+      UM7NMEAPacket p = new UM7NMEAPacket();
+      p.setAttributes(attributesMap);
+
+
+      int realChecksum = 0;
+      boolean calc = false;
+      for (byte b: data) {
+        if (!calc && b == '$') {
+          calc = true;
+          continue;
+        }
+        if (calc && b == '*') {
+          calc = false;
+        }
+
+        if (calc) {
+          realChecksum = realChecksum ^ b;
+        }
+      }
+
+      if (realChecksum != checksum) {
+        LOG.warn("NMEA checksum mismatch real: 0x{}, dest: 0x{}",
+          String.format("%2x", realChecksum),
+          String.format("%2x", checksum));
+        return null;
+      }
+      return p;
 
 
     } else {

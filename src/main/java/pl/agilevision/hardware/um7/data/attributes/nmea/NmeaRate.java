@@ -1,47 +1,42 @@
 package pl.agilevision.hardware.um7.data.attributes.nmea;
 
-import org.supercsv.cellprocessor.ParseBool;
 import org.supercsv.cellprocessor.ParseDouble;
-import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 
 /**
- * NmeaPose packet attributes
+ * NmeaRate packet attributes
  * @author Ivan Borschov (iborschov@agilevision.pl)
  */
-public class NmeaPose extends ConfigurableRateAttribute {
+public class NmeaRate extends ConfigurableRateAttribute {
 
-  public static final String NMEA_HEADER = "$PCHRP";
+  public static final String NMEA_HEADER = "$PCHRR";
 
-  public static final String Time = "nmea_pose_time";
-  public static final String HomeNorth = "nmea_pose_home_north";
-  public static final String HomeEast = "nmea_pose_home_east";
-  public static final String HomeAltitude = "nmea_pose_home_altitude";
-  public static final String Roll = "nmea_pose_home_roll";
-  public static final String Pitch = "nmea_pose_home_pitch";
-  public static final String Yaw = "nmea_pose_home_yaw";
-  public static final String Heading = "nmea_pose_home_heading";
+  public static final String Time = "nmea_rate_time";
+  public static final String VelocityNorth = "nmea_rate_velocity_north";
+  public static final String VelocityEast = "nmea_rate_velocity_east";
+  public static final String VelocityUpward = "nmea_rate_velocity_upward";
+  public static final String RollRate = "nmea_rate_roll_rate";
+  public static final String PitchRate = "nmea_rate_pitch_rate";
+  public static final String YawRate = "nmea_rate_yaw_rate";
 
 
-  public static final String[] parseFormat = {Time, HomeNorth, HomeEast, HomeAltitude, Roll, Pitch, Yaw,
-    Heading, NmeaCheckSumField};
+  public static final String[] parseFormat = {Time, VelocityNorth, VelocityEast, VelocityUpward, RollRate,
+    PitchRate, YawRate};
 
-  public static final CellProcessor[] parseCellProcessor = new CellProcessor[]{
-    new ParseDouble(), // Time
-    new ParseDouble(), // HomeNorth
-    new ParseDouble(), // HomeEast",
+  public static final CellProcessor[] parseCellProcessor = new CellProcessor[] {
+    new ParseDouble(), // time
+    new ParseDouble(), // velocityNorth
+    new ParseDouble(), // velocityEast
+    new ParseDouble(), // velocityUpward
 
-    new ParseDouble(), // HomeAltitude
-    new ParseDouble(), // Roll
-    new ParseDouble(), // Pitch
-    new ParseDouble(), // Yaw
-    new ParseDouble(), // Heading
-    new NotNull(), // checksum"
+    new ParseDouble(), // rollRate
+    new ParseDouble(), // pitchRate
+    new ParseDouble(), // yawRate
   };
 
-  public NmeaPose(int registerAddress, String name, int bitOffset, int bitWidth) {
+  public NmeaRate(int registerAddress, String name, int bitOffset, int bitWidth) {
     super(registerAddress, name, bitOffset, bitWidth);
   }
 }
