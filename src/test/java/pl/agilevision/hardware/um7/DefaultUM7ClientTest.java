@@ -163,7 +163,7 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
       attributes.put(UM7Attributes.NMEA.Sensor, UM7Attributes.Frequency.NMEA.Freq1_HZ);
       attributes.put(UM7Attributes.NMEA.Rates, UM7Attributes.Frequency.NMEA.Freq1_HZ);
       attributes.put(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.Freq1_HZ);
-      attributes.put(UM7Attributes.NMEA.Quat, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+      attributes.put(UM7Attributes.NMEA.Quaternion, UM7Attributes.Frequency.NMEA.Freq1_HZ);
 
       attributes.put(UM7Attributes.AllRaw, 0);
       attributes.put(UM7Attributes.AllProc, 0);

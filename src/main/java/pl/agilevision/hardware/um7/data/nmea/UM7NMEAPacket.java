@@ -8,7 +8,4 @@ import java.lang.reflect.Field;
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
 public class UM7NMEAPacket extends UM7Packet{
-  public static boolean isNmea() {
-    return true;
-  }
 }

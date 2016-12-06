@@ -141,7 +141,7 @@ public class DefaultUM7 implements UM7 {
   }
 
   private UM7DataSample parseDataBatch(byte[] data, int startAddress) throws IOException {
-    UM7Packet u = BinaryPacketParser.getParser().parse(data, startAddress);
+    UM7Packet u = BinaryPacketParser.getParser().parse(data, um7Client.getCallbacks(), startAddress);
     return new UM7DataSample(u.getAttributes());
   }
 

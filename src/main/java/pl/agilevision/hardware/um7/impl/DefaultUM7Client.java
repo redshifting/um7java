@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.agilevision.hardware.um7.UM7Client;
 import pl.agilevision.hardware.um7.UM7Constants;
+import pl.agilevision.hardware.um7.callback.DataCallback;
 import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
@@ -35,6 +36,7 @@ public class DefaultUM7Client implements UM7Client {
   private int baudRate;
   private boolean connected;
   private final float defaultTimeoutInSeconds;
+  private Map<ConfigurableRateAttribute, DataCallback> callbacks;
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final Map<Integer, Integer> baudRates;
@@ -74,6 +76,7 @@ public class DefaultUM7Client implements UM7Client {
     this.devicePort = devicePort;
     this.baudRate = baudRate;
     this.defaultTimeoutInSeconds = defaultTimeoutInSeconds;
+    callbacks = new HashMap<>();
 
     connect();
   }
@@ -267,18 +270,14 @@ public class DefaultUM7Client implements UM7Client {
         byte [] res = new byte[cur_pos - 1];
         System.arraycopy(nmea_pack, 0, res, 0, cur_pos - 1);
 
-        LOG.debug("NMEA packet");
-        UM7Packet p = NMEAPacketParser.getParser().parse(res);
-        for (Map.Entry<String, Object> entry : p.getAttributes().entrySet())
-        {
-          LOG.debug(entry.getKey() + ": " + entry.getValue().toString());
-        }
+
+        UM7Packet p = NMEAPacketParser.getParser().parse(res, callbacks);
+
         return new UM7BinaryPacket(false, false, startaddress, null, false, false);
       }
     }
     return new UM7BinaryPacket(packetFound == 1, hasdata == 1, startaddress, data, commandfailed == 1, timeouted == 1);
   }
-
 
   @Override
   public UM7BinaryPacket readRegister(final int start, final int length, final float timeout)
@@ -412,6 +411,27 @@ public class DefaultUM7Client implements UM7Client {
     }
     serialPort.setBaudRate(baudRate);
     return true;
+  }
+
+  @Override
+  public void registerCallback(ConfigurableRateAttribute attribute, DataCallback callback) {
+    if (callbacks.containsKey(attribute)) {
+      LOG.error("Callback for {} already defined, skiping new callback", attribute.getRateConfName());
+      return;
+    }
+    callbacks.put(attribute, callback);
+  }
+
+  @Override
+  public void unregisterCallback(ConfigurableRateAttribute attribute) {
+    if (callbacks.containsKey(attribute)) {
+      callbacks.remove(attribute);
+    }
+  }
+
+  @Override
+  public Map<ConfigurableRateAttribute, DataCallback> getCallbacks() {
+    return callbacks;
   }
 
 

@@ -1,12 +1,15 @@
 package pl.agilevision.hardware.um7;
 
 import org.junit.Test;
+import pl.agilevision.hardware.um7.callback.DataCallback;
+import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 import pl.agilevision.hardware.um7.impl.DefaultUM7;
 import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by volodymyr on 07.11.16.
@@ -44,6 +47,18 @@ public class EmulatorTest {
 
     setR_ok = um7cli.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq15_HZ);
     System.out.println("Set NMEA.NmeaHealth Rate " + (setR_ok ? "ok":"failed."));
+
+    um7cli.registerCallback(UM7Attributes.NMEA.Health, new DataCallback() {
+      @Override
+      public void onPacket(UM7Packet packet) {
+        System.out.println("NMEA packet");
+        for (Map.Entry<String, Object> entry : packet.getAttributes().entrySet())
+        {
+          System.out.println(entry.getKey() + ": " + entry.getValue().toString());
+        }
+      }
+    });
+
 
 //    boolean setR_ok = um7cli.setDataRate(UM7Attributes.Accelerator.Raw, 7);
 //    System.out.println("Set Accel Raw Rate " + (setR_ok ? "ok":"failed."));

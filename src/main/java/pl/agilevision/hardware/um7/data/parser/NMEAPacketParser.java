@@ -9,6 +9,8 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvMapReader;
 import org.supercsv.io.ICsvMapReader;
 import org.supercsv.prefs.CsvPreference;
+import pl.agilevision.hardware.um7.UM7Attributes;
+import pl.agilevision.hardware.um7.callback.DataCallback;
 import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import pl.agilevision.hardware.um7.data.attributes.nmea.*;
@@ -26,7 +28,7 @@ import java.util.Map;
 /**
  * Created by volodymyr on 02.12.16.
  */
-public class NMEAPacketParser implements PacketParser {
+public class NMEAPacketParser extends PacketParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final byte[] PACKET_PREFIX = "$PCHR".getBytes(StandardCharsets.US_ASCII);
@@ -37,6 +39,7 @@ public class NMEAPacketParser implements PacketParser {
 
   private static final Map<String, String[]> PACKET_COLUMNS_MAPPING;
   private static final Map<String, CellProcessor[]> PACKET_PROCESSOR_MAPPING;
+  private static final Map<String, ConfigurableRateAttribute> PACKET_ATTRIBUTE_MAPPING;
 
   static {
     PACKET_COLUMNS_MAPPING = new HashMap<>();
@@ -56,6 +59,15 @@ public class NMEAPacketParser implements PacketParser {
     PACKET_PROCESSOR_MAPPING.put(NmeaRate.NMEA_HEADER, NmeaRate.parseCellProcessor);
     PACKET_PROCESSOR_MAPPING.put(NmeaGpsPose.NMEA_HEADER, NmeaGpsPose.parseCellProcessor);
     PACKET_PROCESSOR_MAPPING.put(NmeaQuaternion.NMEA_HEADER, NmeaQuaternion.parseCellProcessor);
+
+    PACKET_ATTRIBUTE_MAPPING = new HashMap<>();
+    PACKET_ATTRIBUTE_MAPPING.put(NmeaHealth.NMEA_HEADER, UM7Attributes.NMEA.Health);
+    PACKET_ATTRIBUTE_MAPPING.put(NmeaPose.NMEA_HEADER, UM7Attributes.NMEA.Pose);
+    PACKET_ATTRIBUTE_MAPPING.put(NmeaAttitude.NMEA_HEADER, UM7Attributes.NMEA.Attitude);
+    PACKET_ATTRIBUTE_MAPPING.put(NmeaSensor.NMEA_HEADER, UM7Attributes.NMEA.Sensor);
+    PACKET_ATTRIBUTE_MAPPING.put(NmeaRate.NMEA_HEADER, UM7Attributes.NMEA.Rates);
+    PACKET_ATTRIBUTE_MAPPING.put(NmeaGpsPose.NMEA_HEADER, UM7Attributes.NMEA.GpsPose);
+    PACKET_ATTRIBUTE_MAPPING.put(NmeaQuaternion.NMEA_HEADER, UM7Attributes.NMEA.Quaternion);
   }
 
   public NMEAPacketParser(){
@@ -76,8 +88,9 @@ public class NMEAPacketParser implements PacketParser {
     return ParserUtils.beginsWith(data, PACKET_PREFIX);
   }
 
+
   @Override
-  public UM7Packet parse(byte[] data, Integer... startAddress) {
+  public UM7Packet parse(byte[] data, Map<ConfigurableRateAttribute, DataCallback> callbacks, Integer... startAddress) {
     final String header = new String(Arrays.copyOf(data, PACKET_HEADER_LENGTH - 1),
         StandardCharsets.US_ASCII);
 
@@ -127,6 +140,8 @@ public class NMEAPacketParser implements PacketParser {
           String.format("%2x", checksum));
         return null;
       }
+      this.callBack(callbacks, PACKET_ATTRIBUTE_MAPPING.get(header), p);
+
       return p;
 
 

@@ -28,7 +28,7 @@ public class NMEAParserTest {
     // Then
     assertTrue(parser.canParse(data));
 
-    UM7Packet nmeaPacket = parser.parse(data);
+    UM7Packet nmeaPacket = parser.parse(data, null);
 
     assertNotNull(nmeaPacket);
   }
@@ -43,7 +43,7 @@ public class NMEAParserTest {
     // Then
     assertTrue(parser.canParse(data));
 
-    UM7Packet nmeaPacket = parser.parse(data);
+    UM7Packet nmeaPacket = parser.parse(data, null);
 
     assertNotNull(nmeaPacket);
   }
@@ -57,7 +57,7 @@ public class NMEAParserTest {
     // Then
     assertTrue(parser.canParse(data));
 
-    UM7Packet nmeaPacket = parser.parse(data);
+    UM7Packet nmeaPacket = parser.parse(data, null);
 
     assertNotNull(nmeaPacket);
   }
@@ -71,7 +71,7 @@ public class NMEAParserTest {
     // Then
     assertTrue(parser.canParse(data));
 
-    UM7Packet nmeaPacket = parser.parse(data);
+    UM7Packet nmeaPacket = parser.parse(data, null);
 
     assertNotNull(nmeaPacket);
   }
@@ -85,7 +85,7 @@ public class NMEAParserTest {
     // Then
     assertTrue(parser.canParse(data));
 
-    UM7Packet nmeaPacket = parser.parse(data);
+    UM7Packet nmeaPacket = parser.parse(data, null);
 
     assertNotNull(nmeaPacket);
   }
@@ -100,7 +100,7 @@ public class NMEAParserTest {
     // Then
     assertTrue(parser.canParse(data));
 
-    UM7Packet nmeaPacket = parser.parse(data);
+    UM7Packet nmeaPacket = parser.parse(data, null);
 
     assertNotNull(nmeaPacket);
   }
@@ -108,13 +108,13 @@ public class NMEAParserTest {
   @Test
   public void testParseQuaternion(){
 
-    final byte[] data = "$PCHRQ,105.015,0.76592,0.76592,0.76592,0.76592,*60".getBytes(
+    final byte[] data = "$PCHRQ,105.015,0.76592,0.76592,0.76592,0.76592,*76".getBytes(
         StandardCharsets.US_ASCII);
 
     // Then
     assertTrue(parser.canParse(data));
 
-    UM7Packet nmeaPacket = parser.parse(data);
+    UM7Packet nmeaPacket = parser.parse(data, null);
 
     assertNotNull(nmeaPacket);
   }

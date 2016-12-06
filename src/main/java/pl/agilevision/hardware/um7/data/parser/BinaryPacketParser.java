@@ -7,7 +7,9 @@ import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 import pl.agilevision.hardware.um7.UM7Attributes;
 import pl.agilevision.hardware.um7.UM7Constants;
+import pl.agilevision.hardware.um7.callback.DataCallback;
 import pl.agilevision.hardware.um7.data.UM7Packet;
+import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import pl.agilevision.hardware.um7.data.nmea.*;
 import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
 
@@ -23,7 +25,7 @@ import java.util.Map;
 /**
  * Created by volodymyr on 02.12.16.
  */
-public class BinaryPacketParser implements PacketParser {
+public class BinaryPacketParser extends PacketParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final byte[] PACKET_PREFIX = "$PCHR".getBytes(StandardCharsets.US_ASCII);
@@ -55,7 +57,7 @@ public class BinaryPacketParser implements PacketParser {
   }
 
   @Override
-  public UM7Packet parse(byte[] data, Integer... startAddress) {
+  public UM7Packet parse(byte[] data, Map<ConfigurableRateAttribute, DataCallback> callbacks, Integer... startAddress) {
     if (startAddress.length != 1) {
       return null;
     }
@@ -68,6 +70,7 @@ public class BinaryPacketParser implements PacketParser {
       if (startAddr == UM7Constants.Registers.DREG_HEALTH) {
         // (0x55,  85) NmeaHealth register
         u.getAttributes().put(UM7Attributes.Health.Value, is.readInt());
+        this.callBack(callbacks, UM7Attributes.Health, u);
 
     /* **************************
        Processed sensor Section
@@ -93,24 +96,50 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Magnetometer.Processed.Z, is.readFloat());
         u.getAttributes().put(UM7Attributes.Magnetometer.Processed.Time, is.readFloat());
 
+        // create separate packets for callbacks
+        UM7Packet u1 = new UM7Packet();
+        u1.getAttributes().put(UM7Attributes.Gyro.Processed.X, u.getAttributes().get(UM7Attributes.Gyro.Processed.X)); //f
+        u1.getAttributes().put(UM7Attributes.Gyro.Processed.Y, u.getAttributes().get(UM7Attributes.Gyro.Processed.Y));
+        u1.getAttributes().put(UM7Attributes.Gyro.Processed.Z, u.getAttributes().get(UM7Attributes.Gyro.Processed.Z));
+        u1.getAttributes().put(UM7Attributes.Gyro.Processed.Time, u.getAttributes().get(UM7Attributes.Gyro.Processed.Time));
+        this.callBack(callbacks, UM7Attributes.Gyro.Processed, u1);
+
+        UM7Packet u2 = new UM7Packet();
+        u2.getAttributes().put(UM7Attributes.Accelerator.Processed.X, u.getAttributes().get(UM7Attributes.Accelerator.Processed.X));
+        u2.getAttributes().put(UM7Attributes.Accelerator.Processed.Y, u.getAttributes().get(UM7Attributes.Accelerator.Processed.Y));
+        u2.getAttributes().put(UM7Attributes.Accelerator.Processed.Z, u.getAttributes().get(UM7Attributes.Accelerator.Processed.Z));
+        u2.getAttributes().put(UM7Attributes.Accelerator.Processed.Time, u.getAttributes().get(UM7Attributes.Accelerator.Processed.Time));
+        this.callBack(callbacks, UM7Attributes.Accelerator.Processed, u2);
+
+        UM7Packet u3 = new UM7Packet();
+        u3.getAttributes().put(UM7Attributes.Magnetometer.Processed.X, u.getAttributes().get(UM7Attributes.Magnetometer.Processed.X));
+        u3.getAttributes().put(UM7Attributes.Magnetometer.Processed.Y, u.getAttributes().get(UM7Attributes.Magnetometer.Processed.Y));
+        u3.getAttributes().put(UM7Attributes.Magnetometer.Processed.Z, u.getAttributes().get(UM7Attributes.Magnetometer.Processed.Z));
+        u3.getAttributes().put(UM7Attributes.Magnetometer.Processed.Time, u.getAttributes().get(UM7Attributes.Magnetometer.Processed.Time));
+        this.callBack(callbacks, UM7Attributes.Magnetometer.Processed, u3);
+
       } else if (startAddr == UM7Constants.Registers.DREG_GYRO_PROC_X) {
 
         u.getAttributes().put(UM7Attributes.Gyro.Processed.X, is.readFloat()); //f
         u.getAttributes().put(UM7Attributes.Gyro.Processed.Y, is.readFloat());
         u.getAttributes().put(UM7Attributes.Gyro.Processed.Z, is.readFloat());
         u.getAttributes().put(UM7Attributes.Gyro.Processed.Time, is.readFloat());
+        this.callBack(callbacks, UM7Attributes.Gyro.Processed, u);
+
       } else if (startAddr == UM7Constants.Registers.DREG_ACCEL_PROC_X) {
 
         u.getAttributes().put(UM7Attributes.Accelerator.Processed.X, is.readFloat());
         u.getAttributes().put(UM7Attributes.Accelerator.Processed.Y, is.readFloat());
         u.getAttributes().put(UM7Attributes.Accelerator.Processed.Z, is.readFloat());
         u.getAttributes().put(UM7Attributes.Accelerator.Processed.Time, is.readFloat());
+        this.callBack(callbacks, UM7Attributes.Accelerator.Processed, u);
 
       } else if (startAddr == UM7Constants.Registers.DREG_MAG_PROC_X) {
         u.getAttributes().put(UM7Attributes.Magnetometer.Processed.X, is.readFloat());
         u.getAttributes().put(UM7Attributes.Magnetometer.Processed.Y, is.readFloat());
         u.getAttributes().put(UM7Attributes.Magnetometer.Processed.Z, is.readFloat());
         u.getAttributes().put(UM7Attributes.Magnetometer.Processed.Time, is.readFloat());
+        this.callBack(callbacks, UM7Attributes.Magnetometer.Processed, u);
 
     /* **************************
        Raw sensor/temperature Section
@@ -137,9 +166,39 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Magnetometer.Raw.Z, is.readShort());
         is.skipBytes(2); //2x
         u.getAttributes().put(UM7Attributes.Magnetometer.Raw.Time, is.readFloat());
+
         u.getAttributes().put(UM7Attributes.Temperature.Value, is.readFloat()); //f
         u.getAttributes().put(UM7Attributes.Temperature.Time, is.readFloat()); //f
 
+        // create separate packets for callbacks
+        UM7Packet u1 = new UM7Packet();
+        u1.getAttributes().put(UM7Attributes.Gyro.Raw.X, u.getAttributes().get(UM7Attributes.Gyro.Raw.X)); //h
+        u1.getAttributes().put(UM7Attributes.Gyro.Raw.Y, u.getAttributes().get(UM7Attributes.Gyro.Raw.Y));
+        u1.getAttributes().put(UM7Attributes.Gyro.Raw.Z, u.getAttributes().get(UM7Attributes.Gyro.Raw.Z));
+        is.skipBytes(2); //2x
+        u1.getAttributes().put(UM7Attributes.Gyro.Raw.Time, u.getAttributes().get(UM7Attributes.Gyro.Raw.Time)); //f
+        this.callBack(callbacks, UM7Attributes.Gyro.Raw, u1);
+
+        UM7Packet u2 = new UM7Packet();
+        u2.getAttributes().put(UM7Attributes.Accelerator.Raw.X, u.getAttributes().get(UM7Attributes.Accelerator.Raw.X)); //h
+        u2.getAttributes().put(UM7Attributes.Accelerator.Raw.Y, u.getAttributes().get(UM7Attributes.Accelerator.Raw.Y));
+        u2.getAttributes().put(UM7Attributes.Accelerator.Raw.Z, u.getAttributes().get(UM7Attributes.Accelerator.Raw.Z));
+        is.skipBytes(2); //2x
+        u2.getAttributes().put(UM7Attributes.Accelerator.Raw.Time, u.getAttributes().get(UM7Attributes.Accelerator.Raw.Time)); //f
+        this.callBack(callbacks, UM7Attributes.Accelerator.Raw, u2);
+
+        UM7Packet u3 = new UM7Packet();
+        u3.getAttributes().put(UM7Attributes.Magnetometer.Raw.X, u.getAttributes().get(UM7Attributes.Magnetometer.Raw.X)); //h
+        u3.getAttributes().put(UM7Attributes.Magnetometer.Raw.Y, u.getAttributes().get(UM7Attributes.Magnetometer.Raw.Y));
+        u3.getAttributes().put(UM7Attributes.Magnetometer.Raw.Z, u.getAttributes().get(UM7Attributes.Magnetometer.Raw.Z));
+        is.skipBytes(2); //2x
+        u3.getAttributes().put(UM7Attributes.Magnetometer.Raw.Time, u.getAttributes().get(UM7Attributes.Magnetometer.Raw.Time));
+        this.callBack(callbacks, UM7Attributes.Magnetometer.Raw, u3);
+
+        UM7Packet u4 = new UM7Packet();
+        u4.getAttributes().put(UM7Attributes.Temperature.Value, u.getAttributes().get(UM7Attributes.Temperature.Value)); //f
+        u4.getAttributes().put(UM7Attributes.Temperature.Time, u.getAttributes().get(UM7Attributes.Temperature.Time)); //f
+        this.callBack(callbacks, UM7Attributes.Temperature, u4);
       } else if (startAddr == UM7Constants.Registers.DREG_GYRO_RAW_XY) {
         // 3x
         u.getAttributes().put(UM7Attributes.Gyro.Raw.X, is.readShort() / DEGREES_DIVIDER); //h
@@ -147,6 +206,8 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Gyro.Raw.Z, is.readShort() / DEGREES_DIVIDER);
         is.skipBytes(2); //2x
         u.getAttributes().put(UM7Attributes.Gyro.Raw.Time, is.readFloat()); //f
+        this.callBack(callbacks, UM7Attributes.Gyro.Raw, u);
+
       } else if (startAddr == UM7Constants.Registers.DREG_ACCEL_RAW_XY) {
         // 3x
         u.getAttributes().put(UM7Attributes.Accelerator.Raw.X, is.readShort() / DEGREES_DIVIDER); //h
@@ -154,6 +215,7 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Accelerator.Raw.Z, is.readShort() / DEGREES_DIVIDER);
         is.skipBytes(2); //2x
         u.getAttributes().put(UM7Attributes.Accelerator.Raw.Time, is.readFloat()); //f
+        this.callBack(callbacks, UM7Attributes.Accelerator.Raw, u);
       } else if (startAddr == UM7Constants.Registers.DREG_MAG_RAW_XY) {
         // 3x
         u.getAttributes().put(UM7Attributes.Magnetometer.Raw.X, is.readShort()); //h
@@ -161,11 +223,12 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Magnetometer.Raw.Z, is.readShort());
         is.skipBytes(2); //2x
         u.getAttributes().put(UM7Attributes.Magnetometer.Raw.Time, is.readFloat());
+        this.callBack(callbacks, UM7Attributes.Magnetometer.Raw, u);
       } else if (startAddr == UM7Constants.Registers.DREG_TEMPERATURE) {
         // 3x 2bytes
         u.getAttributes().put(UM7Attributes.Temperature.Value, is.readFloat()); //f
         u.getAttributes().put(UM7Attributes.Temperature.Time, is.readFloat()); //f
-
+        this.callBack(callbacks, UM7Attributes.Temperature, u);
     /* *********
        Quat
      ******** */
@@ -176,7 +239,7 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Quat.C, is.readShort() / QUAT_DIVIDER); //h
         u.getAttributes().put(UM7Attributes.Quat.D, is.readShort() / QUAT_DIVIDER); //h
         u.getAttributes().put(UM7Attributes.Quat.Time, is.readFloat()); //f
-
+        this.callBack(callbacks, UM7Attributes.Quat, u);
     /* ************
        POSE - Euler/position packet
      ************** */
@@ -200,6 +263,26 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Position.Up, is.readFloat());
         u.getAttributes().put(UM7Attributes.Position.Time, is.readFloat());
 
+        // create separate packets for callbacks
+        UM7Packet u1 = new UM7Packet();
+        u1.getAttributes().put(UM7Attributes.Euler.Roll, u.getAttributes().get(UM7Attributes.Euler.Roll)); //h
+        u1.getAttributes().put(UM7Attributes.Euler.Pitch, u.getAttributes().get(UM7Attributes.Euler.Pitch)); //h
+        u1.getAttributes().put(UM7Attributes.Euler.Yaw, u.getAttributes().get(UM7Attributes.Euler.Yaw)); //h
+        is.skipBytes(2); //2x
+        u1.getAttributes().put(UM7Attributes.Euler.RollRate, u.getAttributes().get(UM7Attributes.Euler.RollRate)); //h
+        u1.getAttributes().put(UM7Attributes.Euler.PitchRate, u.getAttributes().get(UM7Attributes.Euler.RollRate)); //h
+        u1.getAttributes().put(UM7Attributes.Euler.YawRate, u.getAttributes().get(UM7Attributes.Euler.YawRate)); //h
+        is.skipBytes(2); //2x
+        u1.getAttributes().put(UM7Attributes.Euler.Time, u.getAttributes().get(UM7Attributes.Euler.Time)); //f
+        this.callBack(callbacks, UM7Attributes.Euler, u1);
+
+        UM7Packet u2 = new UM7Packet();
+        u2.getAttributes().put(UM7Attributes.Position.North, u.getAttributes().get(UM7Attributes.Position.North));
+        u2.getAttributes().put(UM7Attributes.Position.East, u.getAttributes().get(UM7Attributes.Position.East));
+        u2.getAttributes().put(UM7Attributes.Position.Up, u.getAttributes().get(UM7Attributes.Position.Up));
+        u2.getAttributes().put(UM7Attributes.Position.Time, u.getAttributes().get(UM7Attributes.Position.Time));
+        this.callBack(callbacks, UM7Attributes.Position, u2);
+
       } else if (startAddr == UM7Constants.Registers.DREG_EULER_PHI_THETA) {
         // 5x Euler Angle data
         // (0x70, 112) Processed Euler Data:
@@ -212,6 +295,7 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Euler.YawRate, is.readShort() / RATE_DIVIDER); //h
         is.skipBytes(2); //2x
         u.getAttributes().put(UM7Attributes.Euler.Time, is.readFloat()); //f
+        this.callBack(callbacks, UM7Attributes.Euler, u);
 
       } else if (startAddr == UM7Constants.Registers.DREG_POSITION_NORTH) {
         // 4x Position
@@ -219,7 +303,7 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Position.East, is.readFloat());
         u.getAttributes().put(UM7Attributes.Position.Up, is.readFloat());
         u.getAttributes().put(UM7Attributes.Position.Time, is.readFloat());
-
+        this.callBack(callbacks, UM7Attributes.Position, u);
     /* ***************
        Velocity
     *************** */
@@ -230,13 +314,14 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Velocity.East, is.readFloat());
         u.getAttributes().put(UM7Attributes.Velocity.Up, is.readFloat());
         u.getAttributes().put(UM7Attributes.Velocity.Time, is.readFloat());
-
+        this.callBack(callbacks, UM7Attributes.Velocity, u);
       } else if (startAddr == UM7Constants.Registers.DREG_GYRO_BIAS_X) {
         //(0x89, 137) gyro bias xyz
         // values=struct.unpack('!fff', data)
         u.getAttributes().put(UM7Attributes.GyroBias.X, is.readFloat());
         u.getAttributes().put(UM7Attributes.GyroBias.Y, is.readFloat());
         u.getAttributes().put(UM7Attributes.GyroBias.Z, is.readFloat());
+        this.callBack(callbacks, UM7Attributes.GyroBias, u);
       } else if (startAddr == UM7Constants.Registers.DREG_GPS_LATITUDE) {
         //6x
         u.getAttributes().put(UM7Attributes.Gps.Latitude, is.readFloat());
@@ -246,7 +331,7 @@ public class BinaryPacketParser implements PacketParser {
         u.getAttributes().put(UM7Attributes.Gps.Course, is.readFloat());
         u.getAttributes().put(UM7Attributes.Gps.Speed, is.readFloat());
         u.getAttributes().put(UM7Attributes.Gps.Time, is.readFloat());
-
+        this.callBack(callbacks, UM7Attributes.Gps, u);
       } else if (startAddr == UM7Constants.Registers.DREG_GPS_SAT_1_2) {
         //6x
         u.getAttributes().put(UM7Attributes.GpsSateliteDetails.Sat1Id, is.readByte());
@@ -284,7 +369,7 @@ public class BinaryPacketParser implements PacketParser {
 
         u.getAttributes().put(UM7Attributes.GpsSateliteDetails.Sat12Id, is.readByte());
         u.getAttributes().put(UM7Attributes.GpsSateliteDetails.Sat12Snr, is.readByte());
-
+        this.callBack(callbacks, UM7Attributes.GpsSateliteDetails, u);
 // todo CREG_GYRO_TRIM_* is not data register, should we parse it here?
 //    } else if (startAddress == UM7Constants.Registers.CREG_GYRO_TRIM_X) {
 //      // (0x0C,  12)

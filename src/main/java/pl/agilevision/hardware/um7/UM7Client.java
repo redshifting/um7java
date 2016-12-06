@@ -1,9 +1,12 @@
 package pl.agilevision.hardware.um7;
 
+import pl.agilevision.hardware.um7.callback.DataCallback;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
+
+import java.util.Map;
 
 /**
  * Low-level UM7 client for IO operations with the UM7 device
@@ -105,4 +108,20 @@ public interface UM7Client {
    * @throws OperationTimeoutException if the operation timed out
    */
   boolean setBaudRate(int baudRate) throws DeviceConnectionException, OperationTimeoutException;
+
+  /**
+   * Sets data callback for specified packet
+   * @param attribute - attribute of packet, e.g. UM7Attributes.Health
+   * @param callback - callback with implemented onPacket method that will be triggered on new data
+   */
+  void registerCallback(ConfigurableRateAttribute attribute, DataCallback callback);
+
+  /**
+   * Unsets data callback for specified packet
+   * @param attribute - attribute of packet, e.g. UM7Attributes.Health
+   */
+  void unregisterCallback(ConfigurableRateAttribute attribute);
+
+
+  Map<ConfigurableRateAttribute,DataCallback> getCallbacks();
 }

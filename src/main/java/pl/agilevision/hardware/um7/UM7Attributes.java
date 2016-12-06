@@ -45,7 +45,7 @@ public interface UM7Attributes {
     NmeaSensor Sensor = new NmeaSensor(UM7Constants.Registers.CREG_COM_RATES7, "NMEA SENSOR_RATE", 16, 4);
     NmeaRate Rates = new NmeaRate(UM7Constants.Registers.CREG_COM_RATES7, "NMEA RATES_RATE", 12, 4);
     NmeaGpsPose GpsPose = new NmeaGpsPose(UM7Constants.Registers.CREG_COM_RATES7, "NMEA GPS_POSE_RATE", 8, 4);
-    NmeaQuaternion Quat = new NmeaQuaternion(UM7Constants.Registers.CREG_COM_RATES7, "NMEA QUAT_RATE", 4, 4);
+    NmeaQuaternion Quaternion = new NmeaQuaternion(UM7Constants.Registers.CREG_COM_RATES7, "NMEA QUAT_RATE", 4, 4);
   }
 
   // Rates that re-defines batch groups
