@@ -1,5 +1,6 @@
 package pl.agilevision.hardware.um7;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import pl.agilevision.hardware.um7.callback.DataCallback;
 import pl.agilevision.hardware.um7.data.UM7Packet;
@@ -17,7 +18,7 @@ import java.util.Map;
 public class EmulatorTest {
 
   @Test
-  //@Ignore
+  @Ignore
   public void testConnection() throws DeviceConnectionException, OperationTimeoutException {
 
     String[] statevars = new String[] {

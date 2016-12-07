@@ -11,15 +11,17 @@ import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
  */
 public class NmeaQuaternion extends ConfigurableRateAttribute {
 
-  public static final String NMEA_HEADER = "$PCHRQ";
+  public static final String NMEA_HEADER = "$PCHRG";
 
   public static final String Time = "nmea_quaternion_time";
   public static final String A = "nmea_quaternion_a";
   public static final String B = "nmea_quaternion_b";
   public static final String C = "nmea_quaternion_c";
   public static final String D = "nmea_quaternion_d";
+  public static final String Res1 = "nmea_quaternion_res1";
+  public static final String Res2 = "nmea_quaternion_res2";
 
-  public static final String[] parseFormat = {Time, A, B, C, D};
+  public static final String[] parseFormat = {Time, A, B, C, D, Res1, Res2};
 
   public static final CellProcessor[] parseCellProcessor = new CellProcessor[] {
     new ParseDouble(), // time
@@ -27,6 +29,8 @@ public class NmeaQuaternion extends ConfigurableRateAttribute {
     new ParseDouble(), // b
     new ParseDouble(), // c
     new ParseDouble(), // d
+    new ParseDouble(),
+    new ParseDouble(),
   };
 
   public NmeaQuaternion(int registerAddress, String name, int bitOffset, int bitWidth) {

@@ -134,7 +134,7 @@ public interface UM7Constants {
 
   interface Defaults {
     int BAUD_RATE = 115200;
-    float OPERATION_TIMEOUT_IN_SECONDS = 0.1f;
+    float OPERATION_TIMEOUT_IN_SECONDS = 1.0f;
     long READ_DELAY_IN_NANOSECONDS = 10;
   }
 }

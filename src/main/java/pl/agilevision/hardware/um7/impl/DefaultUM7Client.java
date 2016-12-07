@@ -41,6 +41,7 @@ public class DefaultUM7Client implements UM7Client {
   private static final Logger LOG = LoggerFactory.getLogger(DefaultUM7Client.class);
   private static final Map<Integer, Integer> baudRates;
   private static byte[] nmea_pack;
+  private  static final int MAX_NMEA_LENGTH = 256;
   static
   {
     baudRates = new HashMap<>();
@@ -57,7 +58,7 @@ public class DefaultUM7Client implements UM7Client {
     baudRates.put(460800, 10);
     baudRates.put(921600, 11);
 
-    nmea_pack = new byte[1024]; // suppose that max nmea packet length is 1024
+    nmea_pack = new byte[MAX_NMEA_LENGTH]; // suppose that max nmea packet length is 1024
     nmea_pack[0] = '$';
     nmea_pack[1] = 'P';
     nmea_pack[2] = 'C';
@@ -260,18 +261,22 @@ public class DefaultUM7Client implements UM7Client {
         }
       } else {
         // is NMEA packet
-        int cur_pos = 3;
+        try {
+          int cur_pos = 3;
 
-        int cur_b;
-        do {
-          cur_b = this.readByte();
-          nmea_pack[cur_pos ++] = (byte) (cur_b & 0xFF);
-        } while (cur_b != '\r');
-        byte [] res = new byte[cur_pos - 1];
-        System.arraycopy(nmea_pack, 0, res, 0, cur_pos - 1);
-
-
-        UM7Packet p = NMEAPacketParser.getParser().parse(res, callbacks);
+          int cur_b;
+          do {
+            cur_b = this.readByte();
+            nmea_pack[cur_pos++] = (byte) (cur_b & 0xFF);
+          } while (cur_b != '\r' && cur_b != '\n');
+          byte[] res = new byte[cur_pos - 1];
+          System.arraycopy(nmea_pack, 0, res, 0, cur_pos - 1);
+          LOG.debug(String.format("Nmea Pack read: [%s]", new String(nmea_pack).substring(6)));
+          UM7Packet p = NMEAPacketParser.getParser().parse(res, callbacks);
+        } catch (ArrayIndexOutOfBoundsException e) {
+          LOG.warn("Can't stop NMEA packet reading, no stop bytes found by reading {} bytes of data: {}",MAX_NMEA_LENGTH,
+                  new String(nmea_pack));
+        }
 
         return new UM7BinaryPacket(false, false, startaddress, null, false, false);
       }
@@ -335,7 +340,7 @@ public class DefaultUM7Client implements UM7Client {
     while (System.nanoTime() - t0 < ns_timeout) { // While elapsed time is less than timeout
       UM7BinaryPacket packet = this.readPacket();
       if (packet.startaddress == start) {
-        LOG.debug("Found packet with address {}", start);
+        LOG.debug("Found packet answer to writeRegister with address {}", start);
         return packet;
       }
     }
@@ -347,6 +352,9 @@ public class DefaultUM7Client implements UM7Client {
     UM7BinaryPacket p;
     // read current register value
     p = readRegister(attribute.getRateConfRegisterAddress());
+    if (p.data == null ) {
+      LOG.warn("Cant read register of {}", attribute.getRateConfName());
+    }
     final DataInputStream p_data = new DataInputStream(new ByteArrayInputStream(p.data));
 
     long reg_val;
@@ -374,7 +382,7 @@ public class DefaultUM7Client implements UM7Client {
     }
     byte[] res = baos.toByteArray();
 
-    writeRegister(attribute.getRateConfRegisterAddress(), res.length / 4, res, defaultTimeoutInSeconds, true);
+    writeRegister(attribute.getRateConfRegisterAddress(), res.length / 4, res, defaultTimeoutInSeconds, false);
 
     return true;
   }

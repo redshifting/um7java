@@ -1,5 +1,9 @@
 package pl.agilevision.hardware.um7;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+
+import org.slf4j.LoggerFactory;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import org.junit.Test;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
@@ -54,7 +58,18 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
   public void testReadRegistry() throws DeviceConnectionException, OperationTimeoutException {
     info("Read registry check");
     final UM7Client client = new DefaultUM7Client(TEST_DEVICE_NAME, TEST_PORT_NAME);
+    Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    //root.setLevel(Level.INFO);
 
+    client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.FreqOFF);
+    client.setDataRate(UM7Attributes.NMEA.Quaternion, UM7Attributes.Frequency.NMEA.FreqOFF);
+    client.setDataRate(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.FreqOFF);
+    client.setDataRate(UM7Attributes.NMEA.Sensor, UM7Attributes.Frequency.NMEA.FreqOFF);
+    client.setDataRate(UM7Attributes.NMEA.Rates, UM7Attributes.Frequency.NMEA.FreqOFF);
+    client.setDataRate(UM7Attributes.NMEA.Attitude, UM7Attributes.Frequency.NMEA.FreqOFF);
+
+    client.setDataRate(UM7Attributes.AllProc, 0);
+    client.setDataRate(UM7Attributes.AllRaw, 0);
     try{
 
       // Given
@@ -126,7 +141,12 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
       for(final Map.Entry<String, Integer> entry : registers.entrySet()){
         
         final UM7BinaryPacket dataPacket = client.readRegister(entry.getValue());
-        final String message = String.format("Register [%-15s] contains value [%s]", entry.getKey(), encoder.encodeToString(dataPacket.data));
+        String message;
+        if (dataPacket.data != null) {
+           message = String.format("Register [%-15s] contains value [%s]", entry.getKey(), dataPacket.data.toString());
+        } else {
+          message = String.format("Can't read register [%-15s] , timeouted: [%s]", entry.getKey(), dataPacket.timeout);
+        }
         System.out.println(message);
       }
 

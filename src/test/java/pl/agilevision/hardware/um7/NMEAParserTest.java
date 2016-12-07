@@ -22,7 +22,7 @@ public class NMEAParserTest {
   public void testParseHealth(){
 
     // Given
-    final byte[] data = "$PCHRH,105.015,05,11,1.5,0,0,0,0,0,0,0,0,0,*70".getBytes(
+    final byte[] data = "$PCHRH,105.015,05,11,1.5,0,0,0,0,0,0,0,0,0,*60".getBytes(
         StandardCharsets.US_ASCII);
 
     // Then
