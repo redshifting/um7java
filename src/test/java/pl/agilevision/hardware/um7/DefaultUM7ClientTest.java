@@ -185,8 +185,8 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
       attributes.put(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.Freq1_HZ);
       attributes.put(UM7Attributes.NMEA.Quaternion, UM7Attributes.Frequency.NMEA.Freq1_HZ);
 
-      attributes.put(UM7Attributes.AllRaw, 0);
-      attributes.put(UM7Attributes.AllProc, 0);
+      attributes.put(UM7Attributes.AllRaw, 1);
+      attributes.put(UM7Attributes.AllProc, 1);
       attributes.put(UM7Attributes.Pose, 0);
 
       // Then
@@ -195,7 +195,7 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
       for(final Map.Entry<ConfigurableRateAttribute, Integer> entry : attributes.entrySet()){
         boolean ok = client.setDataRate(entry.getKey(), entry.getValue());
 
-        final String message = String.format("Set rate for [%s] is [%s]", entry.getKey().getRateConfName(),  ok);
+        final String message = String.format("Set rate for [%s] to [%s]", entry.getKey().getRateConfName(),  ok);
         System.out.println(message);
       }
 

@@ -271,7 +271,7 @@ public class DefaultUM7Client implements UM7Client {
           } while (cur_b != '\r' && cur_b != '\n');
           byte[] res = new byte[cur_pos - 1];
           System.arraycopy(nmea_pack, 0, res, 0, cur_pos - 1);
-          LOG.debug(String.format("Nmea Pack read: [%s]", new String(nmea_pack).substring(6)));
+          LOG.debug("Nmea Pack read: [{}]", new String(nmea_pack).substring(0, Math.min(nmea_pack.length, 6)));
           UM7Packet p = NMEAPacketParser.getParser().parse(res, callbacks);
         } catch (ArrayIndexOutOfBoundsException e) {
           LOG.warn("Can't stop NMEA packet reading, no stop bytes found by reading {} bytes of data: {}",MAX_NMEA_LENGTH,
