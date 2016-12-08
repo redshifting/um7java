@@ -266,6 +266,9 @@ public class DefaultUM7Client implements UM7Client {
 
           int cur_b;
           do {
+            while (serialPort.bytesAvailable() < 1) {
+              ;
+            }
             cur_b = this.readByte();
             nmea_pack[cur_pos++] = (byte) (cur_b & 0xFF);
           } while (cur_b != '\r' && cur_b != '\n');

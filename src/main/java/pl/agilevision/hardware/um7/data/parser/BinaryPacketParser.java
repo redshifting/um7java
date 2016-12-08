@@ -61,6 +61,11 @@ public class BinaryPacketParser extends PacketParser {
     if (startAddress.length != 1) {
       return null;
     }
+    if (data == null) {
+
+      UM7Packet u = new UM7Packet();
+      return u;
+    }
     int startAddr = startAddress[0];
     UM7Packet u = new UM7Packet();
     final DataInputStream is = new DataInputStream(new ByteArrayInputStream(data));

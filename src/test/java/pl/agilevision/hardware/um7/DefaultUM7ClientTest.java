@@ -4,11 +4,14 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 
 import org.slf4j.LoggerFactory;
+import pl.agilevision.hardware.um7.callback.DataCallback;
+import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
 import org.junit.Test;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
+import pl.agilevision.hardware.um7.impl.DefaultUM7;
 import pl.agilevision.hardware.um7.impl.DefaultUM7Client;
 
 import java.util.Base64;
@@ -61,12 +64,36 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
     Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     //root.setLevel(Level.INFO);
 
-    client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.FreqOFF);
+    client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
     client.setDataRate(UM7Attributes.NMEA.Quaternion, UM7Attributes.Frequency.NMEA.FreqOFF);
     client.setDataRate(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.FreqOFF);
     client.setDataRate(UM7Attributes.NMEA.Sensor, UM7Attributes.Frequency.NMEA.FreqOFF);
     client.setDataRate(UM7Attributes.NMEA.Rates, UM7Attributes.Frequency.NMEA.FreqOFF);
     client.setDataRate(UM7Attributes.NMEA.Attitude, UM7Attributes.Frequency.NMEA.FreqOFF);
+
+    client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
+
+    client.registerCallback(UM7Attributes.NMEA.Health, new DataCallback() {
+      @Override
+      public void onPacket(UM7Packet packet) {
+        if ((boolean)packet.getAttributes().get(UM7Attributes.NMEA.Health.ComOverflow) == true) {
+          System.out.println("!!!!! Com overflow");
+        } else {
+          System.out.println(">>>> Com ok");
+        }
+      }
+    });
+
+    client.registerCallback(UM7Attributes.Health, new DataCallback() {
+      @Override
+      public void onPacket(UM7Packet packet) {
+        if ( ((int)packet.getAttributes().get(UM7Attributes.Health.Value) & (1<<8)) != 0 ) {
+          System.out.println("!!!!! bin Com overflow");
+        } else {
+          System.out.println(">>>> bin Com ok");
+        }
+      }
+    });
 
     client.setDataRate(UM7Attributes.AllProc, 0);
     client.setDataRate(UM7Attributes.AllRaw, 0);
@@ -150,6 +177,10 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
         System.out.println(message);
       }
 
+      UM7 u = new DefaultUM7(client, new String[]{});
+      while(true) {
+        u.readState();
+      }
     } finally {
       client.disconnect();
     }
