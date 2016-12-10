@@ -1,10 +1,11 @@
 package pl.agilevision.hardware.um7;
 
-import pl.agilevision.hardware.um7.data.UM7Packet;
+import pl.agilevision.hardware.um7.callback.DataCallback;
+import pl.agilevision.hardware.um7.data.attributes.ConfigurableRateAttribute;
+import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -37,7 +38,7 @@ public interface UM7Client {
    * @return packet
    * @throws DeviceConnectionException if a connection error happened while waiting for a packet
    */
-  UM7Packet readPacket() throws DeviceConnectionException;
+  UM7BinaryPacket readPacket() throws DeviceConnectionException;
 
   /**
    * Reads the device registry
@@ -47,7 +48,7 @@ public interface UM7Client {
    * @return registry value
    * @throws OperationTimeoutException if the operation didn't finish in the given timeout
    */
-  UM7Packet readRegister(final int start, final int length, final float timeout)
+  UM7BinaryPacket readRegister(final int start, final int length, final float timeout)
       throws OperationTimeoutException, DeviceConnectionException;
 
   /**
@@ -57,7 +58,7 @@ public interface UM7Client {
    * @throws OperationTimeoutException if timeout happened
    * @throws DeviceConnectionException if there was an issue with the connection
    */
-  UM7Packet readRegister(int start)
+  UM7BinaryPacket readRegister(int start)
       throws OperationTimeoutException, DeviceConnectionException;
 
   /**
@@ -67,7 +68,7 @@ public interface UM7Client {
    * @throws OperationTimeoutException if timeout happened
    * @throws DeviceConnectionException if there was an issue with the connection
    */
-  UM7Packet clearRegister(int start)
+  UM7BinaryPacket clearRegister(int start)
       throws OperationTimeoutException, DeviceConnectionException;
 
   /**
@@ -81,9 +82,21 @@ public interface UM7Client {
    * @throws OperationTimeoutException if timeout happened
    * @throws DeviceConnectionException if there was an issue with the connection
    */
-  UM7Packet writeRegister(final int start, final int length, final byte[] data,
-                          final float timeout, final boolean noRead)
+  UM7BinaryPacket writeRegister(final int start, final int length, final byte[] data,
+                                final float timeout, final boolean noRead)
       throws OperationTimeoutException, DeviceConnectionException;
+
+  /**
+   * Set data rate of certain attribute
+   * @param attribute
+   * @param rate - if attribute is UM7Attributes.NmeaHealth.Value, can be one of UM7Attributes.Frequency.HealthRate.*
+   *             - if attribute is UM7Attributes.NMEA.* then can be one of UM7Attributes.Frequency.NMEA.*
+   *             - if attribute is UM7Attributes.Gps or UM7Attributes.GpsSateliteDetails then can be one of
+   *             UM7Attributes.Frequency.Gps (only 2 values)
+   *              - for all other attribute rate is int from 0 to 255 that defines frequency in Hz
+   * @return
+   */
+  boolean setDataRate(ConfigurableRateAttribute attribute, int rate) throws OperationTimeoutException, DeviceConnectionException;
 
 
   /**
@@ -95,4 +108,20 @@ public interface UM7Client {
    * @throws OperationTimeoutException if the operation timed out
    */
   boolean setBaudRate(int baudRate) throws DeviceConnectionException, OperationTimeoutException;
+
+  /**
+   * Sets data callback for specified packet
+   * @param attribute - attribute of packet, e.g. UM7Attributes.Health
+   * @param callback - callback with implemented onPacket method that will be triggered on new data
+   */
+  void registerCallback(ConfigurableRateAttribute attribute, DataCallback callback);
+
+  /**
+   * Unsets data callback for specified packet
+   * @param attribute - attribute of packet, e.g. UM7Attributes.Health
+   */
+  void unregisterCallback(ConfigurableRateAttribute attribute);
+
+
+  Map<ConfigurableRateAttribute,DataCallback> getCallbacks();
 }

@@ -1,24 +1,29 @@
 package pl.agilevision.hardware.um7.data;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- * Low-level data packet
- * @author Ivan Borschov (iborschov@agilevision.pl)
  * @author Volodymyr Rudyi (volodymyr@agilevision.pl)
  */
 public class UM7Packet {
-    public boolean foundpacket;
-    public boolean hasdata;
-    public int startaddress;
-    public byte[] data;
-    public boolean commandfailed;
-    public boolean timeout;
 
-    public UM7Packet(boolean foundpacket, boolean hasdata, int startaddress, byte[] data, boolean commandfailed, boolean timeout) {
-        this.foundpacket = foundpacket;
-        this.hasdata = hasdata;
-        this.startaddress = startaddress;
-        this.data = data;
-        this.commandfailed = commandfailed;
-        this.timeout = timeout;
-    }
+  /**
+   * Describes attributes the given packet contains. Can be 1 or more attributes
+   * depending on the packet type
+   */
+  private Map<String, Object> attributes;
+
+  public UM7Packet() {
+    this.attributes = new HashMap<String, Object>();
+  }
+
+  public Map<String, Object> getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(Map<String, Object> attributes) {
+    this.attributes = attributes;
+  }
 }
