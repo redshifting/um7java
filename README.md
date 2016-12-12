@@ -129,10 +129,14 @@ um7Client.disconnect();
 ## Data rates and data callbacks
 
 UM7 device provides two modes of data transmission:
+
 1. Binary
 2. NMEA
+
 According to these modes device can transmit binary and NMEA packets.
-To catch samples you should do 2 things:
+
+To catch packets you should do 2 things:
+
 1. Configure data rate of packet
 2. Set listener callback
 
@@ -174,7 +178,8 @@ Example for configuring Binary Temperature packet
 
 ### Frequency values for `setDataRate` method
 Different packets can accept different frequency values
-1. if packet is UM7Attributes.Health, rate param should be one of UM7Attributes.Frequency.HealthRate.*
+
+* if packet is UM7Attributes.Health, rate param should be one of UM7Attributes.Frequency.HealthRate.*
 Example:
 ```
 //enable binary Health packet at 1 Hz rate
@@ -184,7 +189,7 @@ client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq
 client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.FreqOFF);
 ```
 
-2. Fon all NMEA packets (UM7Attributes.NMEA.*) `rate` should be one of UM7Attributes.Frequency.NMEA.*
+* Fon all NMEA packets (UM7Attributes.NMEA.*) `rate` should be one of UM7Attributes.Frequency.NMEA.*
 ```
 //enable NMEA Health packet at 1 Hz rate
 client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
@@ -193,7 +198,7 @@ client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1
 client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.FreqOFF);
 ```
 
-3. For GPS `UM7Attributes.Gps` and GSP Satelite Details `UM7Attributes.GpsSateliteDetails` packet rate should be one of
+* For GPS `UM7Attributes.Gps` and GSP Satelite Details `UM7Attributes.GpsSateliteDetails` packet rate should be one of
 `UM7Attributes.Frequency.Gps.*` (only 2 values)
 
 ```
@@ -204,7 +209,7 @@ client.setDataRate(UM7Attributes.Gps, UM7Attributes.Frequency.Gps.On);
 client.setDataRate(UM7Attributes.Gps, UM7Attributes.Frequency.Gps.Off);
 ```
 
-4. For all other attributes rate is integer from 0 to 255 that defines frequency in Hz
+* For all other attributes rate is integer from 0 to 255 that defines frequency in Hz
 
 ```
 //enable Temperature packet at 123 Hz rate
