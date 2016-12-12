@@ -26,7 +26,7 @@ public class NmeaPose extends ConfigurableRateAttribute {
 
 
   public static final String[] parseFormat = {Time, HomeNorth, HomeEast, HomeAltitude, Roll, Pitch, Yaw,
-  //  Heading
+    Heading
   };
 
   public static final CellProcessor[] parseCellProcessor = new CellProcessor[]{
@@ -38,7 +38,7 @@ public class NmeaPose extends ConfigurableRateAttribute {
     new ParseDouble(), // Roll
     new ParseDouble(), // Pitch
     new ParseDouble(), // Yaw
-   // new ParseDouble() // Heading
+    new ParseDouble() // Heading
   };
 
   public NmeaPose(int registerAddress, String name, int bitOffset, int bitWidth) {

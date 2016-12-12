@@ -20,8 +20,7 @@ public class NmeaAttitude extends ConfigurableRateAttribute {
   public static final String Heading = "nmea_attitude_heading";
 
   public static final String[] parseFormat = {Time, Roll, Pitch,
-          Yaw,
-          //Heading
+          Yaw, Heading
   };
 
   public static final CellProcessor[] parseCellProcessor =  new CellProcessor[] {
@@ -29,7 +28,7 @@ public class NmeaAttitude extends ConfigurableRateAttribute {
     new ParseDouble(), //roll
     new ParseDouble(), //pitch
     new ParseDouble(), //yaw
-   // new ParseDouble(), //heading
+    new ParseDouble(), //heading
   };
 
   public NmeaAttitude(int registerAddress, String name, int bitOffset, int bitWidth) {

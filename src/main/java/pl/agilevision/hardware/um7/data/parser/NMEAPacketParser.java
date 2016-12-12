@@ -6,6 +6,7 @@ import org.supercsv.cellprocessor.ParseDouble;
 import org.supercsv.cellprocessor.ParseInt;
 import org.supercsv.cellprocessor.constraint.NotNull;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.exception.SuperCsvException;
 import org.supercsv.io.CsvMapReader;
 import org.supercsv.io.ICsvMapReader;
 import org.supercsv.prefs.CsvPreference;
@@ -74,6 +75,10 @@ public class NMEAPacketParser extends PacketParser {
 
   }
 
+  public void removeElementFromArray(Object[] a, int del) {
+    System.arraycopy(a,del+1,a,del,a.length-1-del);
+  }
+
   private static NMEAPacketParser single;
 
   public static NMEAPacketParser getParser() {
@@ -103,15 +108,26 @@ public class NMEAPacketParser extends PacketParser {
       final ICsvMapReader mapReader  = new CsvMapReader(new InputStreamReader(new ByteArrayInputStream(csvData)),
         CsvPreference.STANDARD_PREFERENCE);
 
-      final String[] mappings = PACKET_COLUMNS_MAPPING.get(header);
+      String[] mappings = PACKET_COLUMNS_MAPPING.get(header);
+      CellProcessor[] processors = PACKET_PROCESSOR_MAPPING.get(header);
 
       Map<String, Object> attributesMap;
       try {
-        attributesMap = mapReader.read(mappings, PACKET_PROCESSOR_MAPPING.get(header));
-      } catch (IOException e) {
-        e.printStackTrace();
-        LOG.warn("IO exception when parsing NMEA {}, {}", header, data);
-        return null;
+        attributesMap = mapReader.read(mappings, processors);
+      } catch (IOException|SuperCsvException e) {
+        try {
+          // according to some firmware versions we should try to parse without last element (GPS Heading angle)
+          removeElementFromArray(mappings, mappings.length-1);
+          removeElementFromArray(processors, processors.length-1);
+          attributesMap = mapReader.read(mappings, processors);
+
+        } catch (IOException|SuperCsvException e1) {
+          e1.printStackTrace();
+          LOG.warn("exception when parsing NMEA {}, {}", header, data);
+          return null;
+        }
+
+
       }
 
       UM7NMEAPacket p = new UM7NMEAPacket();

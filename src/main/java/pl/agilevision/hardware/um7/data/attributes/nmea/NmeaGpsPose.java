@@ -23,8 +23,7 @@ public class NmeaGpsPose extends ConfigurableRateAttribute {
   public static final String Heading = "nmea_gpspose_heading";
 
 
-  public static final String[] parseFormat = {Time, Latitude, Longitude, Altitude, Roll, Pitch, Yaw,
-    //Heading
+  public static final String[] parseFormat = {Time, Latitude, Longitude, Altitude, Roll, Pitch, Yaw, Heading
   };
 
   public static final CellProcessor[] parseCellProcessor = new CellProcessor[] {
@@ -36,7 +35,7 @@ public class NmeaGpsPose extends ConfigurableRateAttribute {
     new ParseDouble(), //roll
     new ParseDouble(), //pitch
     new ParseDouble(), //yaw
-   // new ParseDouble(), //heading
+    new ParseDouble(), //heading
   };
 
   public NmeaGpsPose(int registerAddress, String name, int bitOffset, int bitWidth) {
