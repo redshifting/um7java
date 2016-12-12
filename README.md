@@ -128,13 +128,6 @@ um7Client.disconnect();
 
 ## Data rates and data callbacks
 
-UM7 device provides two modes of data transmission:
-
-1. Binary
-2. NMEA
-
-According to these modes device can transmit binary and NMEA packets.
-
 To catch packets you should do 2 things:
 
 1. Configure data rate of packet
@@ -189,7 +182,7 @@ client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq
 client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.FreqOFF);
 ```
 
-* Fon all NMEA packets (UM7Attributes.NMEA.*) `rate` should be one of UM7Attributes.Frequency.NMEA.*
+* Fon all NMEA packets (`UM7Attributes.NMEA.*`) `rate` should be one of `UM7Attributes.Frequency.NMEA.*`
 ```
 //enable NMEA Health packet at 1 Hz rate
 client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
@@ -198,7 +191,7 @@ client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1
 client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.FreqOFF);
 ```
 
-* For GPS `UM7Attributes.Gps` and GSP Satelite Details `UM7Attributes.GpsSateliteDetails` packet rate should be one of
+* For GPS `UM7Attributes.Gps` and GPS Satelite Details `UM7Attributes.GpsSateliteDetails` packet rate should be one of
 `UM7Attributes.Frequency.Gps.*` (only 2 values)
 
 ```
