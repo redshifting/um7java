@@ -126,7 +126,7 @@ um7Client.disconnect();
 }
 ```
 
-### Data rates and data callbacks
+## Data rates and data callbacks
 
 UM7 device provides two modes of data transmission:
 1. Binary
@@ -136,7 +136,7 @@ To catch samples you should do 2 things:
 1. Configure data rate of packet
 2. Set listener callback
 
-## Examples
+### Examples
 
 Example for configuring NMEA Health Packet
 ```
@@ -172,7 +172,7 @@ Example for configuring Binary Temperature packet
 ```
 
 
-## Frequency values for `setDataRate` method
+### Frequency values for `setDataRate` method
 Different packets can accept different frequency values
 1. if packet is UM7Attributes.Health, rate param should be one of UM7Attributes.Frequency.HealthRate.*
 Example:
