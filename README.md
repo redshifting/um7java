@@ -131,7 +131,7 @@ um7Client.disconnect();
 To catch packets you should do 2 things:
 
 1. Configure data rate of packet
-2. Set listener callback
+2. Set callback that will accept packet
 
 ### Examples
 
@@ -170,10 +170,9 @@ Example for configuring Binary Temperature packet
 
 
 ### Frequency values for `setDataRate` method
-Different packets can accept different frequency values
+Different packets can accept different frequency values.
 
-* if packet is UM7Attributes.Health, rate param should be one of UM7Attributes.Frequency.HealthRate.*
-Example:
+* if packet is `UM7Attributes.Health`, `rate` param should be one of `UM7Attributes.Frequency.HealthRate.*`. Example:
 ```
 //enable binary Health packet at 1 Hz rate
 client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
@@ -182,7 +181,7 @@ client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq
 client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.FreqOFF);
 ```
 
-* Fon all NMEA packets (`UM7Attributes.NMEA.*`) `rate` should be one of `UM7Attributes.Frequency.NMEA.*`
+* Fon all NMEA packets (`UM7Attributes.NMEA.*`) `rate` should be one of `UM7Attributes.Frequency.NMEA.*`:
 ```
 //enable NMEA Health packet at 1 Hz rate
 client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
@@ -191,8 +190,8 @@ client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1
 client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.FreqOFF);
 ```
 
-* For GPS `UM7Attributes.Gps` and GPS Satelite Details `UM7Attributes.GpsSateliteDetails` packet rate should be one of
-`UM7Attributes.Frequency.Gps.*` (only 2 values)
+* For GPS `UM7Attributes.Gps` and GPS Satelite Details `UM7Attributes.GpsSateliteDetails` packet `rate` should be one of
+`UM7Attributes.Frequency.Gps.*` (only `2` values):
 
 ```
 //enable GPS packet
@@ -202,12 +201,12 @@ client.setDataRate(UM7Attributes.Gps, UM7Attributes.Frequency.Gps.On);
 client.setDataRate(UM7Attributes.Gps, UM7Attributes.Frequency.Gps.Off);
 ```
 
-* For all other attributes rate is integer from 0 to 255 that defines frequency in Hz
+* For all other attributes `rate` is integer from `0` to `255` that defines frequency in `Hz`:
 
 ```
-//enable Temperature packet at 123 Hz rate
+//enable Binary Temperature packet at 123 Hz rate
 client.setDataRate(UM7Attributes.Temperature, 123);
 
-//disable Temperature packet
+//disable Binary Temperature packet
 client.setDataRate(UM7Attributes.Temperature, 0);
 ```
