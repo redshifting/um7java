@@ -136,7 +136,7 @@ To catch packets you should do 2 things:
 ### Examples
 
 Example for configuring NMEA Health Packet
-```
+```java
     //set frequency of NMEA.Health packet to 1 Hz
     client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
 
@@ -153,7 +153,7 @@ Example for configuring NMEA Health Packet
 ```
 
 Example for configuring Binary Temperature packet
-```
+```java
     //set frequency of Temperature packet to 1 Hz
     client.setDataRate(UM7Attributes.Temperature, 1);
 
@@ -173,7 +173,7 @@ Example for configuring Binary Temperature packet
 Different packets can accept different frequency values.
 
 * if packet is `UM7Attributes.Health`, `rate` param should be one of `UM7Attributes.Frequency.HealthRate.*`. Example:
-```
+```java
 //enable binary Health packet at 1 Hz rate
 client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
 
@@ -182,7 +182,7 @@ client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq
 ```
 
 * Fon all NMEA packets (`UM7Attributes.NMEA.*`) `rate` should be one of `UM7Attributes.Frequency.NMEA.*`:
-```
+```java
 //enable NMEA Health packet at 1 Hz rate
 client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
 
@@ -193,7 +193,7 @@ client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.FreqO
 * For GPS `UM7Attributes.Gps` and GPS Satelite Details `UM7Attributes.GpsSateliteDetails` packet `rate` should be one of
 `UM7Attributes.Frequency.Gps.*` (only `2` values):
 
-```
+```java
 //enable GPS packet
 client.setDataRate(UM7Attributes.Gps, UM7Attributes.Frequency.Gps.On);
 
@@ -203,7 +203,7 @@ client.setDataRate(UM7Attributes.Gps, UM7Attributes.Frequency.Gps.Off);
 
 * For all other attributes `rate` is integer from `0` to `255` that defines frequency in `Hz`:
 
-```
+```java
 //enable Binary Temperature packet at 123 Hz rate
 client.setDataRate(UM7Attributes.Temperature, 123);
 
