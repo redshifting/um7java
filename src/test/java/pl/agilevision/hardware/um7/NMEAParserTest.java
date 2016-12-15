@@ -22,7 +22,7 @@ public class NMEAParserTest {
   public void testParseHealth(){
 
     // Given
-    final byte[] data = "$PCHRH,105.015,05,11,1.5,0,0,0,0,0,0,0,0,0,*60".getBytes(
+    final byte[] data = "$PCHRH,105.015,05,11,1.5,0,0,0,0,0,0,0,0,0,*70".getBytes(
         StandardCharsets.US_ASCII);
 
     // Then
@@ -39,6 +39,21 @@ public class NMEAParserTest {
     // Given
     final byte[] data = "$PCHRP,105.015,-501.234,-501.234,15.521,20.32,20.32,20.32,20.32,*47".getBytes(
         StandardCharsets.US_ASCII);
+
+    // Then
+    assertTrue(parser.canParse(data));
+
+    UM7Packet nmeaPacket = parser.parse(data, null);
+
+    assertNotNull(nmeaPacket);
+  }
+
+  @Test
+  public void testParsePoseAlternative(){
+
+    // Given
+    final byte[] data = "$PCHRP,105.015,-501.234,-501.234,15.521,20.32,20.32,20.32,*46".getBytes(
+      StandardCharsets.US_ASCII);
 
     // Then
     assertTrue(parser.canParse(data));
@@ -76,6 +91,21 @@ public class NMEAParserTest {
     assertNotNull(nmeaPacket);
   }
 
+
+  @Test
+  public void testParseAttitudeAlternative(){
+
+    final byte[] data = "$PCHRA,105.015,20.32,20.32,20.32,*67".getBytes(
+      StandardCharsets.US_ASCII);
+
+    // Then
+    assertTrue(parser.canParse(data));
+
+    UM7Packet nmeaPacket = parser.parse(data, null);
+
+    assertNotNull(nmeaPacket);
+  }
+
   @Test
   public void testParseGpsPose(){
 
@@ -90,6 +120,18 @@ public class NMEAParserTest {
     assertNotNull(nmeaPacket);
   }
 
+  @Test
+  public void testParseGpsPoseAlternative() {
+    final byte[] data = "$PCHRG,105.015,40.047706,-111.742072,15.230,20.32,20.32,20.32,*48".getBytes(
+      StandardCharsets.US_ASCII);
+
+    // Then
+    assertTrue(parser.canParse(data));
+
+    UM7Packet nmeaPacket = parser.parse(data, null);
+
+    assertNotNull(nmeaPacket);
+  }
 
   @Test
   public void testParseRate(){

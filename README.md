@@ -18,7 +18,7 @@ build it:
 
 ### Environment preparation
 
-To build the library the following environment variables shoudl be set:
+To build the library the following environment variables should be set:
 
 * *JAVA_HOME* - should point to the location of the JDK
 * *MAVEN_HOME* - should point to the location of the Maven distribution
@@ -132,4 +132,89 @@ void setup() {
       System.out.println("Error");
     }
 }
+```
+
+## Data rates and data callbacks
+
+To catch packets you should do 2 things:
+
+1. Configure data rate of packet
+2. Set callback that will accept packet
+
+### Examples
+
+Example for configuring NMEA Health Packet
+```java
+    //set frequency of NMEA.Health packet to 1 Hz
+    client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+
+    client.registerCallback(UM7Attributes.NMEA.Health, new DataCallback() {
+      @Override
+      public void onPacket(UM7Packet packet) {
+        if ((boolean)packet.getAttributes().get(UM7Attributes.NMEA.Health.ComOverflow) == true) {
+          System.out.println("Com overflow");
+        } else {
+          System.out.println("Com ok");
+        }
+      }
+    });
+```
+
+Example for configuring Binary Temperature packet
+```java
+    //set frequency of Temperature packet to 1 Hz
+    client.setDataRate(UM7Attributes.Temperature, 1);
+
+    client.registerCallback(UM7Attributes.UM7Attributes.Temperature, new DataCallback() {
+      @Override
+      public void onPacket(UM7Packet packet) {
+        String temp = (String)packet.getAttributes().get(UM7Attributes.Temperature.Value);
+        String time = (String)packet.getAttributes().get(UM7Attributes.Temperature.Time);
+
+        System.out.println(String.format("Current temperature is [%s] at [%s]", temp, time));
+      }
+    });
+```
+
+
+### Frequency values for `setDataRate` method
+Different packets can accept different frequency values.
+
+* if packet is `UM7Attributes.Health`, `rate` param should be one of `UM7Attributes.Frequency.HealthRate.*`. Example:
+```java
+//enable binary Health packet at 1 Hz rate
+client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.Freq1_HZ);
+
+//disable binary Health packet
+client.setDataRate(UM7Attributes.Health, UM7Attributes.Frequency.HealthRate.FreqOFF);
+```
+
+* Fon all NMEA packets (`UM7Attributes.NMEA.*`) `rate` should be one of `UM7Attributes.Frequency.NMEA.*`:
+```java
+//enable NMEA Health packet at 1 Hz rate
+client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
+
+//disable NMEA Health packet
+client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.FreqOFF);
+```
+
+* For GPS `UM7Attributes.Gps` and GPS Satelite Details `UM7Attributes.GpsSateliteDetails` packet `rate` should be one of
+`UM7Attributes.Frequency.Gps.*` (only `2` values):
+
+```java
+//enable GPS packet
+client.setDataRate(UM7Attributes.Gps, UM7Attributes.Frequency.Gps.On);
+
+//disable GPS packet
+client.setDataRate(UM7Attributes.Gps, UM7Attributes.Frequency.Gps.Off);
+```
+
+* For all other attributes `rate` is integer from `0` to `255` that defines frequency in `Hz`:
+
+```java
+//enable Binary Temperature packet at 123 Hz rate
+client.setDataRate(UM7Attributes.Temperature, 123);
+
+//disable Binary Temperature packet
+client.setDataRate(UM7Attributes.Temperature, 0);
 ```

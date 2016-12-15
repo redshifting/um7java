@@ -89,7 +89,7 @@ public interface UM7Client {
   /**
    * Set data rate of certain attribute
    * @param attribute
-   * @param rate - if attribute is UM7Attributes.NmeaHealth.Value, can be one of UM7Attributes.Frequency.HealthRate.*
+   * @param rate - if attribute is UM7Attributes.Health.Value, can be one of UM7Attributes.Frequency.HealthRate.*
    *             - if attribute is UM7Attributes.NMEA.* then can be one of UM7Attributes.Frequency.NMEA.*
    *             - if attribute is UM7Attributes.Gps or UM7Attributes.GpsSateliteDetails then can be one of
    *             UM7Attributes.Frequency.Gps (only 2 values)
