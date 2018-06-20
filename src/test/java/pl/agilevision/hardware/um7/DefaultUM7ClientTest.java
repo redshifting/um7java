@@ -63,7 +63,7 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
     final UM7Client client = new DefaultUM7Client(TEST_DEVICE_NAME, TEST_PORT_NAME);
     Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     //root.setLevel(Level.INFO);
-
+try {
     client.setDataRate(UM7Attributes.NMEA.Health, UM7Attributes.Frequency.NMEA.Freq1_HZ);
     client.setDataRate(UM7Attributes.NMEA.Quaternion, UM7Attributes.Frequency.NMEA.FreqOFF);
     client.setDataRate(UM7Attributes.NMEA.GpsPose, UM7Attributes.Frequency.NMEA.FreqOFF);
@@ -97,7 +97,6 @@ public class DefaultUM7ClientTest extends AbstractDeviceTest{
 
     client.setDataRate(UM7Attributes.AllProc, 0);
     client.setDataRate(UM7Attributes.AllRaw, 0);
-    try{
 
       // Given
       final Map<String, Integer> registers = new HashMap<>();
