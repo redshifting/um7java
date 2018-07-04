@@ -175,11 +175,7 @@ try {
         }
         System.out.println(message);
       }
-
-//      UM7 u = new DefaultUM7(client, new String[]{});
-//      while(true) {
-//        u.readState();
-//      }
+      
     } finally {
       client.disconnect();
     }
