@@ -165,7 +165,7 @@ try {
       final Base64.Encoder encoder = Base64.getEncoder();
 
       for(final Map.Entry<String, Integer> entry : registers.entrySet()){
-        
+
         final UM7BinaryPacket dataPacket = client.readRegister(entry.getValue());
         String message;
         if (dataPacket.data != null) {

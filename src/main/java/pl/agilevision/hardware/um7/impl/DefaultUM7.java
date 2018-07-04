@@ -10,6 +10,7 @@ import pl.agilevision.hardware.um7.data.UM7Packet;
 import pl.agilevision.hardware.um7.data.binary.UM7BinaryPacket;
 import pl.agilevision.hardware.um7.data.UM7DataSample;
 import pl.agilevision.hardware.um7.data.parser.BinaryPacketParser;
+import pl.agilevision.hardware.um7.data.parser.NMEAPacketParser;
 import pl.agilevision.hardware.um7.exceptions.DeviceConnectionException;
 import pl.agilevision.hardware.um7.exceptions.OperationTimeoutException;
 
@@ -49,7 +50,7 @@ public class DefaultUM7 implements UM7 {
 
       if (packet.foundpacket) {
         UM7DataSample newsample = null;
-        newsample = this.parseDataBatch(packet.data, packet.startaddress);
+        newsample = this.parseDataBatch(packet.data, packet.startaddress, packet.isNmeaPacket);
         if (newsample != null) {
           sample.update(newsample);
         }
@@ -125,23 +126,28 @@ public class DefaultUM7 implements UM7 {
   public UM7DataSample readState() throws DeviceConnectionException, OperationTimeoutException {
 
     UM7BinaryPacket packet = this.um7Client.readPacket();
-    if (!packet.foundpacket) {
+    if (! packet.foundpacket || packet.commandfailed) {
       return null;
     }
 
     try {
-      UM7DataSample sample = this.parseDataBatch(packet.data, packet.startaddress);
-      if (sample != null) {
+      UM7DataSample sample =
+          this.parseDataBatch(packet.data, packet.startaddress, packet.isNmeaPacket);
+      if (sample != null && sample.getRawData() != null) {
         this.state.update(sample);
       }
+
       return sample;
-    } catch (final Exception e){
+    } catch (final Exception e) {
       throw new DeviceConnectionException("Failed to catch sample", e);
     }
   }
 
-  private UM7DataSample parseDataBatch(byte[] data, int startAddress) throws IOException {
-    UM7Packet u = BinaryPacketParser.getParser().parse(data, um7Client.getCallbacks(), startAddress);
+  private UM7DataSample parseDataBatch(byte[] data, int startAddress, boolean isNmeaPacket)
+      throws IOException {
+    UM7Packet u = ! isNmeaPacket ? BinaryPacketParser.getParser()
+        .parse(data, um7Client.getCallbacks(), startAddress)
+        : NMEAPacketParser.getParser().parse(data, um7Client.getCallbacks());
     return new UM7DataSample(u.getAttributes());
   }
 

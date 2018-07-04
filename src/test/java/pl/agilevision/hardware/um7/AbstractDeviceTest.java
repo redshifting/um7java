@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNotNull;
 public class AbstractDeviceTest {
 
 
-  protected static final String TEST_PORT_NAME = "COM4";
+  protected static final String TEST_PORT_NAME = "/dev/ttyUSB0";
   protected static final String TEST_DEVICE_NAME = "um7";
 
 
