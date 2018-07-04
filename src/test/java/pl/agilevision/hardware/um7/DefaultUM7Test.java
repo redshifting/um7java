@@ -9,6 +9,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by volodymyr on 09.11.16.
@@ -20,16 +21,24 @@ public class DefaultUM7Test extends AbstractDeviceTest {
     info("Data sample test");
     withDevice(um7 -> {
 
-      // When
-      final UM7DataSample state = um7.readState();
+      try {
+        for (int i = 0; i < 5; i++) {
+          final UM7DataSample state = um7.readState();
 
-      // Then
-      assertNotNull(state);
+          if (state != null && state.getRawData() != null) {
 
-      for(final Map.Entry<String, Object> value : state.getRawData().entrySet()){
-        System.out.println(String.format("%-10s: %s", value.getKey(), String.valueOf(value.getValue())));
+            for (final Map.Entry<String, Object> value : state.getRawData().entrySet()) {
+              System.out.println(
+                  String.format("%-10s: %s", value.getKey(), String.valueOf(value.getValue())));
+            }
+          } else {
+            info("Can't get state");
+          }
+        }
+      } catch (Exception ex) {
+        ex.printStackTrace();
+        fail(String.format("Error when try to read state=%s", ex));
       }
-
     });
   }
 
