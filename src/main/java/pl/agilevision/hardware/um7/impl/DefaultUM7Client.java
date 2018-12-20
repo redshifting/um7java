@@ -154,7 +154,7 @@ public class DefaultUM7Client implements UM7Client {
   public UM7BinaryPacket readPacket(float timeout) throws DeviceConnectionException {
     final long timeoutInNanoseconds = (long) (timeout * NANOSECONDS_MULTIPLIER);
     int packetFound = 0;
-    boolean isNmeaPaket = false;
+    boolean isNmeaPacket = false;
     long t0 = System.nanoTime();
 
     while (System.nanoTime() - t0 < timeoutInNanoseconds) {
@@ -176,7 +176,7 @@ public class DefaultUM7Client implements UM7Client {
               int byte3 = this.readByte();
               if (byte3 == 'C') {
                 packetFound = 1;
-                isNmeaPaket = true;
+                isNmeaPacket = true;
                 break;
               }
             }
@@ -198,7 +198,7 @@ public class DefaultUM7Client implements UM7Client {
     if (packetFound == 0) {
       timeouted = 1;
     } else {
-      if (!isNmeaPaket) {
+      if (!isNmeaPacket) {
         timeouted = 0;
 
         int pt = this.readByte() & 0xFF;
@@ -261,6 +261,10 @@ public class DefaultUM7Client implements UM7Client {
         }
       } else {
         // is NMEA packet
+        timeouted = 0;
+
+        byte[] res = null;
+
         try {
           int cur_pos = 3;
 
@@ -272,16 +276,16 @@ public class DefaultUM7Client implements UM7Client {
             cur_b = this.readByte();
             nmea_pack[cur_pos++] = (byte) (cur_b & 0xFF);
           } while (cur_b != '\r' && cur_b != '\n');
-          byte[] res = new byte[cur_pos - 1];
+          res = new byte[cur_pos - 1];
           System.arraycopy(nmea_pack, 0, res, 0, cur_pos - 1);
           LOG.debug("Nmea Pack read: [{}]", new String(nmea_pack).substring(0, Math.min(nmea_pack.length, 6)));
-          UM7Packet p = NMEAPacketParser.getParser().parse(res, callbacks);
         } catch (ArrayIndexOutOfBoundsException e) {
           LOG.warn("Can't stop NMEA packet reading, no stop bytes found by reading {} bytes of data: {}",MAX_NMEA_LENGTH,
                   new String(nmea_pack));
         }
 
-        return new UM7BinaryPacket(false, false, startaddress, null, false, false);
+        return new UM7BinaryPacket(packetFound == 1, res != null && res.length > 0, startaddress,
+            res, false, timeouted == 1, true);
       }
     }
     return new UM7BinaryPacket(packetFound == 1, hasdata == 1, startaddress, data, commandfailed == 1, timeouted == 1);

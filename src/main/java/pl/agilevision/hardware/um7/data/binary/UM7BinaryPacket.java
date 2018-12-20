@@ -14,6 +14,7 @@ public class UM7BinaryPacket extends UM7Packet {
     public byte[] data;
     public boolean commandfailed;
     public boolean timeout;
+    public boolean isNmeaPacket;
 
     public UM7BinaryPacket(boolean foundpacket, boolean hasdata, int startaddress, byte[] data, boolean commandfailed, boolean timeout) {
         this.foundpacket = foundpacket;
@@ -22,5 +23,17 @@ public class UM7BinaryPacket extends UM7Packet {
         this.data = data;
         this.commandfailed = commandfailed;
         this.timeout = timeout;
+        this.isNmeaPacket = false;
+    }
+
+    public UM7BinaryPacket(boolean foundpacket, boolean hasdata, int startaddress, byte[] data,
+        boolean commandfailed, boolean timeout, boolean isNmeaPacket) {
+        this.foundpacket = foundpacket;
+        this.hasdata = hasdata;
+        this.startaddress = startaddress;
+        this.data = data;
+        this.commandfailed = commandfailed;
+        this.timeout = timeout;
+        this.isNmeaPacket = isNmeaPacket;
     }
 }
